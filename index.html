@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grant Copilot</title>
+<style>
+:root{
+  --green:#5FB54A; --green-d:#4a9439; --green-l:#eaf6e7;
+  --orange:#EF6F1A; --orange-d:#c85a11; --orange-l:#fdeee3;
+  --navy:#1F2A44; --navy-l:#2c3a5c; --navy-xl:#eef0f5;
+  --ink:#1b2231; --mut:#6b7488; --line:#dfe3ec; --bg:#f5f6f9; --card:#fff;
+  --red:#c0392b; --red-l:#fdecea; --amber:#b7791f; --amber-l:#fdf6e3;
+  --r:10px; --sh:0 1px 3px rgba(31,42,68,.08), 0 1px 2px rgba(31,42,68,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+h1,h2,h3,h4{margin:0 0 .5rem;line-height:1.25;color:var(--navy)}
+h1{font-size:1.5rem}h2{font-size:1.2rem}h3{font-size:1.02rem}h4{font-size:.9rem}
+p{margin:0 0 .7rem}
+a{color:var(--green-d)}
+small{color:var(--mut)}
+
+/* header */
+header{background:var(--navy);color:#fff;padding:0 18px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.hbar{display:flex;align-items:center;gap:14px;height:58px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:1.05rem;letter-spacing:.2px}
+.logo .dot{width:11px;height:11px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(95,181,74,.25)}
+.logo .dot2{width:11px;height:11px;border-radius:50%;background:var(--orange);margin-left:-16px;box-shadow:0 0 0 3px rgba(239,111,26,.22)}
+.hspace{flex:1}
+.orgpick{display:flex;align-items:center;gap:7px}
+.orgpick select{background:var(--navy-l);color:#fff;border:1px solid rgba(255,255,255,.22);border-radius:7px;padding:6px 9px;font:inherit;font-size:.86rem;max-width:230px}
+nav{display:flex;gap:2px;overflow-x:auto;padding-bottom:0}
+nav button{background:none;border:0;border-bottom:3px solid transparent;color:rgba(255,255,255,.72);padding:11px 13px;font:inherit;font-size:.9rem;cursor:pointer;white-space:nowrap}
+nav button:hover{color:#fff}
+nav button.on{color:#fff;border-bottom-color:var(--green);font-weight:600}
+nav .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:9px;font-size:.68rem;padding:1px 6px;margin-left:5px;font-weight:700;vertical-align:1px}
+
+/* layout */
+main{max-width:1180px;margin:0 auto;padding:20px 18px 70px}
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:16px;box-shadow:var(--sh)}
+.card.pad0{padding:0;overflow:hidden}
+.card>h2:first-child,.card>h3:first-child{margin-top:0}
+.ch{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.ch h2,.ch h3{margin:0}
+.ch .hspace{flex:1}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+
+/* forms */
+label{display:block;font-size:.78rem;font-weight:600;color:var(--navy);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font:inherit;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(95,181,74,.35);border-color:var(--green);outline-offset:-1px}
+textarea{resize:vertical;min-height:72px;line-height:1.5}
+.f{margin-bottom:12px}
+.f .hint{font-size:.76rem;color:var(--mut);margin-top:3px;text-transform:none;letter-spacing:0;font-weight:400}
+.inline{display:flex;gap:9px;align-items:center}
+.inline input[type=checkbox]{width:auto}
+.chk{display:flex;align-items:center;gap:7px;font-size:.9rem;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink)}
+.chk input{width:16px;height:16px;flex:0 0 auto}
+
+/* buttons */
+button.b,a.b{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#fff;border:0;border-radius:7px;padding:8px 14px;font:inherit;font-weight:600;font-size:.88rem;cursor:pointer;text-decoration:none}
+button.b:hover{background:var(--green-d)}
+button.b.o{background:var(--orange)}button.b.o:hover{background:var(--orange-d)}
+button.b.n{background:var(--navy)}button.b.n:hover{background:var(--navy-l)}
+button.b.g{background:#fff;color:var(--navy);border:1px solid var(--line)}
+button.b.g:hover{background:var(--navy-xl)}
+button.b.sm{padding:5px 10px;font-size:.8rem}
+button.b.dz{background:#fff;color:var(--red);border:1px solid #f0c5bf}
+button.b.dz:hover{background:var(--red-l)}
+button.b:disabled{opacity:.45;cursor:not-allowed}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button.lk{background:none;border:0;color:var(--green-d);font:inherit;font-size:.82rem;cursor:pointer;padding:2px 4px;text-decoration:underline}
+button.lk.dz{color:var(--red)}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:.89rem}
+th{text-align:left;background:var(--navy-xl);color:var(--navy);font-size:.74rem;text-transform:uppercase;letter-spacing:.4px;padding:9px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:hover{background:#fafbfd}
+td.r,th.r{text-align:right}
+.tw{overflow-x:auto}
+
+/* bits */
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.73rem;font-weight:700;letter-spacing:.2px}
+.pill.ok{background:var(--green-l);color:var(--green-d)}
+.pill.warn{background:var(--amber-l);color:var(--amber)}
+.pill.bad{background:var(--red-l);color:var(--red)}
+.pill.neu{background:var(--navy-xl);color:var(--navy)}
+.pill.org{background:var(--orange-l);color:var(--orange-d)}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;box-shadow:var(--sh)}
+.stat .n{font-size:1.75rem;font-weight:700;color:var(--navy);line-height:1.1}
+.stat .l{font-size:.76rem;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+.stat.a .n{color:var(--orange)}
+.stat.d .n{color:var(--red)}
+.meter{height:7px;background:var(--navy-xl);border-radius:999px;overflow:hidden;margin-top:7px}
+.meter i{display:block;height:100%;background:var(--green);border-radius:999px}
+.meter i.lo{background:var(--red)}.meter i.mid{background:var(--orange)}
+.empty{text-align:center;padding:34px 18px;color:var(--mut)}
+.empty .ic{font-size:1.9rem;opacity:.4;margin-bottom:6px}
+.note{background:var(--navy-xl);border-left:3px solid var(--navy);padding:10px 13px;border-radius:0 7px 7px 0;font-size:.86rem;margin-bottom:14px}
+.note.w{background:var(--amber-l);border-color:var(--amber)}
+.note.d{background:var(--red-l);border-color:var(--red)}
+.note.g{background:var(--green-l);border-color:var(--green)}
+.gap{background:var(--red-l);border:1px dashed var(--red);color:var(--red);border-radius:5px;padding:1px 6px;font-weight:600;font-size:.84rem;font-family:ui-monospace,Menlo,Consolas,monospace}
+.src{font-size:.74rem;color:var(--mut);font-style:italic}
+.tag{display:inline-block;background:var(--navy-xl);color:var(--navy);border-radius:5px;font-size:.72rem;padding:2px 7px;margin:0 3px 3px 0}
+.rowbox{border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px;background:#fcfcfe}
+.rowbox .ch{margin-bottom:9px}
+.sub{border-left:3px solid var(--green);padding-left:12px;margin:14px 0}
+details{border:1px solid var(--line);border-radius:8px;margin-bottom:9px;background:#fff}
+details>summary{padding:11px 13px;cursor:pointer;font-weight:600;font-size:.92rem;color:var(--navy);list-style:none;display:flex;gap:9px;align-items:center}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"▸";color:var(--green);font-size:.8rem}
+details[open]>summary::before{content:"▾"}
+details .dbody{padding:0 13px 13px;border-top:1px solid var(--line);padding-top:12px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--navy);color:#fff;padding:11px 20px;border-radius:9px;font-size:.9rem;font-weight:500;z-index:200;opacity:0;transition:.25s;box-shadow:0 6px 20px rgba(0,0,0,.2);max-width:90vw}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.err{background:var(--red)}
+.wc{font-size:.76rem;color:var(--mut);text-align:right;margin-top:3px}
+.wc.over{color:var(--red);font-weight:700}
+.draftbox{font-size:.92rem;line-height:1.65;white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:8px;padding:13px;min-height:90px}
+.scorebar{display:flex;gap:3px;margin-top:6px}
+.scorebar i{flex:1;height:5px;background:var(--navy-xl);border-radius:2px}
+.scorebar i.f{background:var(--green)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.87rem}
+.kv dt{color:var(--mut);white-space:nowrap}
+.kv dd{margin:0;font-weight:500}
+.modal{position:fixed;inset:0;background:rgba(31,42,68,.55);display:none;align-items:flex-start;justify-content:center;z-index:150;padding:24px 16px;overflow-y:auto}
+.modal.on{display:flex}
+.modal .inner{background:#fff;border-radius:12px;max-width:760px;width:100%;padding:20px 22px;box-shadow:0 18px 50px rgba(0,0,0,.3)}
+/* pipeline board */
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:12px;overflow-x:auto;padding-bottom:10px}
+.col{background:var(--navy-xl);border-radius:var(--r);padding:10px;min-height:180px;border:2px dashed transparent}
+.col.over{border-color:var(--green);background:var(--green-l)}
+.col h4{display:flex;align-items:center;gap:6px;margin:2px 2px 10px;font-size:.82rem;text-transform:uppercase;letter-spacing:.4px}
+.col h4 .cnt{margin-left:auto;background:#fff;border-radius:9px;padding:0 7px;font-size:.72rem;color:var(--mut)}
+.kc{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 11px;margin-bottom:8px;box-shadow:var(--sh);cursor:grab;font-size:.86rem}
+.kc:active{cursor:grabbing}.kc.drag{opacity:.4}
+.kc .t{font-weight:600;color:var(--navy);line-height:1.3;margin-bottom:3px}
+.kc .m{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.kc select{padding:3px 6px;font-size:.76rem;margin-top:7px}
+.chk-list{list-style:none;padding:0;margin:0}
+.chk-list li{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.chk-list li .ic{flex:0 0 20px;font-weight:700;text-align:center}
+.chk-list li.ok .ic{color:var(--green-d)}.chk-list li.warn .ic{color:var(--amber)}.chk-list li.block .ic{color:var(--red)}
+.hbar-row{display:grid;grid-template-columns:minmax(110px,1.3fr) 3fr auto;gap:10px;align-items:center;padding:6px 0;font-size:.86rem;border-bottom:1px solid var(--line)}
+.hbar-track{height:12px;background:transparent;position:relative}
+.hbar-fill{height:12px;border-radius:0 4px 4px 0;background:var(--navy)}
+.sync{font-size:.76rem;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:6px;cursor:pointer}
+.sync i{width:8px;height:8px;border-radius:50%;background:#8a93a8;display:inline-block}
+.sync.on i{background:var(--green)}.sync.busy i{background:var(--orange)}.sync.err i{background:#ff6b5b}
+.ai-badge{display:inline-block;background:linear-gradient(90deg,#5FB54A,#3c8cc9);color:#fff;border-radius:5px;font-size:.68rem;font-weight:700;padding:1px 6px;letter-spacing:.3px;vertical-align:1px}
+.opp{border:1px solid var(--line);border-radius:8px;padding:12px 13px;margin-bottom:10px;background:#fff}
+.opp.new{border-left:4px solid var(--orange)}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-2px}
+.spin.dk{border-color:rgba(31,42,68,.2);border-top-color:var(--navy)}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ver{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:9px;background:#fcfcfe}
+.ver pre{white-space:pre-wrap;font:inherit;font-size:.86rem;margin:6px 0 0;max-height:180px;overflow:auto}
+@media (max-width:640px){ .hbar{height:auto;padding:8px 0} main{padding:16px 14px 60px} }
+@media print{
+  header,nav,.noprint{display:none!important}
+  body{background:#fff}main{max-width:none;padding:0}
+  .card{box-shadow:none;border-color:#ccc;page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hbar">
+    <div class="logo"><span class="dot"></span><span class="dot2"></span>Grant&nbsp;Copilot</div>
+    <div class="hspace"></div>
+    <span id="syncState" class="sync" onclick="App.go('settings')" title="Cloud sync status"></span>
+    <div class="orgpick">
+      <select id="orgSel" onchange="App.switchOrg(this.value)" title="Active organization"></select>
+      <button class="b g sm" onclick="App.newOrg()" title="Add organization">+ Org</button>
+    </div>
+  </div>
+  <nav id="nav"></nav>
+</header>
+
+<main>
+  <div class="view" id="v-dash"></div>
+  <div class="view" id="v-vault"></div>
+  <div class="view" id="v-docs"></div>
+  <div class="view" id="v-answers"></div>
+  <div class="view" id="v-rfp"></div>
+  <div class="view" id="v-drafts"></div>
+  <div class="view" id="v-track"></div>
+  <div class="view" id="v-data"></div>
+  <div class="view" id="v-search"></div>
+  <div class="view" id="v-settings"></div>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal" onclick="if(event.target===this)App.closeModal()"><div class="inner" id="modalInner"></div></div>
+
+<script>
+/* ============================================================
+   GRANT COPILOT — self-contained grant data vault + draft engine
+   Data lives in this browser (localStorage). Export regularly.
+   ============================================================ */
+"use strict";
+
+const KEY = "grantCopilot.v1";
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+/* Local date, not UTC — an evening in Philadelphia is already tomorrow in UTC,
+   which would shift every deadline count by a day. */
+const today = () => { const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+const words = s => (String(s||"").trim().match(/\S+/g)||[]).length;
+const fmtD = d => { if(!d) return "—"; const p=String(d).split("-"); if(p.length<3) return d;
+  return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}); };
+const daysTo = d => { if(!d) return null; const p=String(d).split("-"); if(p.length<3) return null;
+  return Math.round((new Date(+p[0],+p[1]-1,+p[2]) - new Date(today().split("-")[0],+today().split("-")[1]-1,+today().split("-")[2]))/864e5); };
+const money = n => (n===""||n==null||isNaN(+n))?"—":"$"+Number(n).toLocaleString("en-US",{maximumFractionDigits:0});
+const nn = v => (v==null?"":String(v));
+
+/* ---------- pipeline stages ---------- */
+const STAGES = ["Prospect","Reading RFP","Drafting","Review","Submitted","Awarded","Declined","Reporting"];
+const LEGACY_STAGE = {"Researching":"Prospect","Internal review":"Review"};
+const CLOSED = new Set(["Submitted","Awarded","Declined","Reporting"]);
+const isOpen = a => !CLOSED.has(a.status);
+function stagePill(s){ return s==="Awarded"||s==="Reporting"?"ok":s==="Declined"?"bad":s==="Submitted"?"neu":"org"; }
+
+/* ---------- blank organization ---------- */
+function blankOrg(name){
+  return {
+    id: uid(), name: name || "New Organization",
+    profile:{
+      legalName:"", dba:"", ein:"", uei:"", samStatus:"", samExpires:"", duns:"",
+      entityType:"501(c)(3) nonprofit", incState:"", incDate:"", determinationDate:"", ntee:"",
+      licenseNos:"", addr:"", city:"", state:"", zip:"", county:"", phone:"", email:"", website:"",
+      fiscalYearEnd:"", edName:"", edTitle:"Executive Director", edEmail:"", edPhone:"", edBio:"",
+      mission:"", vision:"", history:"", serviceArea:"", populationServed:"", needStatement:"",
+      programDesc:"", goalsOutcomes:"", evaluation:"", capacity:"", equity:"", sustainability:"",
+      partnerships:"", facilities:"", accreditation:"",
+      enrolled:"", capacityLicensed:"", staffCount:"", annualBudget:"", mealsPerYear:"",
+      pctSubsidy:"", yearsOperating:"", auditStatus:"", revenueMix:"", fiscalSponsor:"",
+      ageGroups:"", hours:"", stars:""
+    },
+    board:[], staff:[], programs:[], awards:[],
+    docs:[], answers:[], apps:[]
+  };
+}
+
+/* ---------- seed: a blank starter organization ----------
+   No real organization data lives in the code. Fill the Org Vault in the app,
+   or restore a backup in Backup → Import. */
+function seedStarter(){
+  const o = blankOrg("My Organization");
+  o.docs = ["IRS 501(c)(3) determination letter|Legal/Tax|No expiration","W-9|Legal/Tax|Re-sign annually for most funders",
+    "Board of Directors roster|Governance|","Articles of Incorporation / bylaws|Governance|","Certificate of liability insurance|Insurance|",
+    "Most recent audit or financial review|Financial|","IRS Form 990 (most recent)|Financial|","Current year operating budget|Financial|",
+    "SAM.gov registration confirmation|Federal|Renews annually"].map(x=>{ const [name,cat,notes]=x.split("|");
+      return {id:uid(), name, cat, expires:"", loc:"", notes, status:"unknown"}; });
+  return o;
+}
+
+/* ---------- state ---------- */
+let S = null;
+function load(){
+  try{ const raw = localStorage.getItem(KEY); if(raw){ S = JSON.parse(raw);
+    if(S && S.orgs && S.orgs.length){ S.orgs.forEach(normalizeOrg); normalizeState(); return; } } }catch(e){ console.warn("load failed",e); }
+  const p = seedStarter();
+  S = { orgs:[p], activeId:p.id, v:2 };
+  normalizeState();
+  save();
+}
+function normalizeOrg(o){
+  const b = blankOrg();
+  o.profile = Object.assign({}, b.profile, o.profile||{});
+  ["board","staff","programs","awards","docs","answers","apps"].forEach(k=>{ if(!Array.isArray(o[k])) o[k]=[]; });
+  o.apps.forEach(a=>{ if(LEGACY_STAGE[a.status]) a.status=LEGACY_STAGE[a.status]; if(!STAGES.includes(a.status)) a.status="Prospect";
+    a.parsed=a.parsed||{questions:[],attachments:[],budget:[],scoring:[],eligibility:[],raw:""};
+    a.drafts=a.drafts||{}; a.draftMeta=a.draftMeta||{}; a.attachOK=a.attachOK||{}; a.versions=a.versions||{}; a.budgetAck=a.budgetAck||{}; });
+}
+function normalizeState(){
+  S.settings = Object.assign({ reminderDays:14, requireSignoff:false, savedSearches:[], seenOpps:{}, notified:{} }, S.settings||{});
+}
+const SAVE_HOOKS = [];
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast("Could not save — storage may be full","err"); }
+  SAVE_HOOKS.forEach(f=>{ try{ f(); }catch(e){ console.warn(e); } }); }
+function org(){ return S.orgs.find(o=>o.id===S.activeId) || S.orgs[0]; }
+
+function toast(m, cls){ const t=document.getElementById("toast"); t.textContent=m; t.className="toast on"+(cls?" "+cls:"");
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.className="toast",2600); }
+
+/* ---------- field metadata for the vault + draft engine ---------- */
+const FIELD_LABEL = {
+  legalName:"Legal name", dba:"DBA / trade name", ein:"EIN", uei:"UEI (SAM.gov)", samStatus:"SAM.gov status",
+  samExpires:"SAM registration expires", duns:"DUNS", entityType:"Entity type", incState:"State of incorporation",
+  incDate:"Date incorporated", determinationDate:"IRS determination date", ntee:"NTEE code",
+  licenseNos:"License / certificate numbers", addr:"Street address", city:"City", state:"State", zip:"ZIP",
+  county:"County", phone:"Phone", email:"Organization email", website:"Website", fiscalYearEnd:"Fiscal year end",
+  edName:"Executive Director name", edTitle:"ED title", edEmail:"ED email", edPhone:"ED phone", edBio:"ED biography",
+  mission:"Mission statement", vision:"Vision statement", history:"Organizational history",
+  serviceArea:"Service area", populationServed:"Population served", needStatement:"Statement of need",
+  programDesc:"Program description", goalsOutcomes:"Goals and measurable outcomes", evaluation:"Evaluation plan",
+  capacity:"Organizational capacity", equity:"Equity / DEI approach", sustainability:"Sustainability plan",
+  partnerships:"Partnerships and collaborations", facilities:"Facilities description", accreditation:"Accreditation",
+  enrolled:"Children currently enrolled", capacityLicensed:"Licensed capacity", staffCount:"Number of staff",
+  annualBudget:"Annual operating budget", mealsPerYear:"Meals served per year", pctSubsidy:"% subsidy / low-income",
+  yearsOperating:"Years operating", auditStatus:"Audit status", revenueMix:"Revenue sources and percentages",
+  fiscalSponsor:"Fiscal sponsor", ageGroups:"Age groups served", hours:"Hours of operation", stars:"Keystone STARS level"
+};
+const VAULT_SECTIONS = [
+  { k:"ident", t:"Identity & registrations", d:"The numbers every application asks for. Fill these once.",
+    f:["legalName","dba","entityType","ein","uei","samStatus","samExpires","duns","incState","incDate","determinationDate","ntee","licenseNos","stars","accreditation"] },
+  { k:"contact", t:"Contact & location", d:"",
+    f:["addr","city","state","zip","county","phone","email","website","fiscalYearEnd","hours"] },
+  { k:"leader", t:"Leadership", d:"",
+    f:["edName","edTitle","edEmail","edPhone","edBio"] },
+  { k:"narr", t:"Narrative library", d:"Reusable prose. The draft engine pulls from these fields first.",
+    f:["mission","vision","history","serviceArea","populationServed","ageGroups","needStatement","programDesc","goalsOutcomes","evaluation","capacity","equity","sustainability","partnerships","facilities"] },
+  { k:"nums", t:"Numbers & financials", d:"Keep these current — funders compare them against your budget and attachments.",
+    f:["enrolled","capacityLicensed","staffCount","yearsOperating","annualBudget","mealsPerYear","pctSubsidy","revenueMix","auditStatus","fiscalSponsor"] }
+];
+const LONG_FIELDS = new Set(["edBio","mission","vision","history","serviceArea","populationServed","needStatement","programDesc","goalsOutcomes","evaluation","capacity","equity","sustainability","partnerships","facilities","revenueMix","licenseNos"]);
+const NUM_FIELDS = new Set(["enrolled","capacityLicensed","staffCount","annualBudget","mealsPerYear","pctSubsidy","yearsOperating"]);
+const DATE_FIELDS = new Set(["samExpires","incDate","determinationDate"]);
+
+/* ---------- navigation ---------- */
+const VIEWS = [
+  {id:"dash", t:"Dashboard"}, {id:"search", t:"Find Grants"}, {id:"track", t:"Pipeline"},
+  {id:"rfp", t:"RFP Reader"}, {id:"drafts", t:"Drafts"}, {id:"answers", t:"Answer Library"},
+  {id:"vault", t:"Org Vault"}, {id:"docs", t:"Documents"}, {id:"settings", t:"Settings"}, {id:"data", t:"Backup"}
+];
+const VIEW_FN = {};
+let cur = "dash";
+
+const App = {
+  go(id){ cur=id; location.hash=id; render(); window.scrollTo(0,0); },
+  switchOrg(id){ S.activeId=id; save(); render(); },
+  newOrg(){
+    const n = prompt("Organization name:"); if(!n) return;
+    const o = blankOrg(n.trim()); S.orgs.push(o); S.activeId=o.id; save(); cur="vault"; render();
+    toast("Organization added — fill the vault next");
+  },
+  closeModal(){ document.getElementById("modal").classList.remove("on"); },
+  openModal(html){ document.getElementById("modalInner").innerHTML=html; document.getElementById("modal").classList.add("on"); }
+};
+
+function renderNav(){
+  const o = org();
+  const openApps = o.apps.filter(a=>isOpen(a)&&a.status!=="Prospect").length;
+  const dueSoon = o.apps.filter(a=>isOpen(a)&&a.deadline&&daysTo(a.deadline)!=null&&daysTo(a.deadline)>=0&&daysTo(a.deadline)<=(S.settings.reminderDays||14)).length;
+  document.getElementById("nav").innerHTML = VIEWS.map(v=>{
+    let b="";
+    if(v.id==="drafts" && openApps) b=`<span class="badge">${openApps}</span>`;
+    if(v.id==="track" && dueSoon) b=`<span class="badge" title="Deadlines within ${S.settings.reminderDays} days">${dueSoon}</span>`;
+    return `<button class="${cur===v.id?"on":""}" onclick="App.go('${v.id}')">${v.t}${b}</button>`;
+  }).join("");
+  document.getElementById("orgSel").innerHTML = S.orgs.map(x=>
+    `<option value="${x.id}" ${x.id===S.activeId?"selected":""}>${esc(x.name)}</option>`).join("");
+}
+
+function render(){
+  renderNav();
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
+  const el = document.getElementById("v-"+cur); if(!el){ cur="dash"; return render(); }
+  el.classList.add("on");
+  Object.assign(VIEW_FN,{dash:viewDash, vault:viewVault, docs:viewDocs, answers:viewAnswers, rfp:viewRFP, drafts:viewDrafts, data:viewData}, VIEW_FN);
+  (VIEW_FN[cur]||viewDash)(el);
+}
+
+/* ============================================================
+   TOPIC MAP — how a funder's question maps to vault content
+   ============================================================ */
+const GAP_A="⟦", GAP_B="⟧";
+function gapTok(label){ return GAP_A+"NEEDS: "+label+GAP_B; }
+function renderDraftText(t){
+  return esc(t).replace(new RegExp(GAP_A+"([^"+GAP_B+"]+)"+GAP_B,"g"),(m,p)=>`<span class="gap">${p}</span>`);
+}
+
+const TOPICS = [
+  { id:"mission", label:"Mission & purpose",
+    kw:["mission","organizational purpose","purpose of your organization","what is your mission","organization's mission","agency mission"],
+    fields:["mission","history"],
+    build:(F)=>[F("mission"), F("history")] },
+
+  { id:"history", label:"Organizational history",
+    kw:["history","background of the organization","organizational background","founded","how long has your organization","years of operation","about your organization","organization overview","organizational profile"],
+    fields:["history","yearsOperating","legalName","entityType"],
+    build:(F,o)=>[
+      `${F("legalName")} is a ${F("entityType")} that has operated for ${F("yearsOperating")} years.`,
+      F("history"), F("mission")] },
+
+  { id:"need", label:"Statement of need",
+    kw:["statement of need","need statement","community need","describe the need","problem statement","what problem","challenge","gap in services","disparit","why is this project needed","justification","needs assessment"],
+    fields:["needStatement","serviceArea","populationServed"],
+    build:(F)=>[F("needStatement"),
+      `This project serves ${F("serviceArea")}. ${F("populationServed")}`] },
+
+  { id:"population", label:"Population served",
+    kw:["population served","population you will serve","population to be served","population","who will be served","target population","target audience","demographic","participants served","number served","beneficiar","children served","whom will","whom you serve","clients served","served annually","number of children","children and their ages","ages of the children"],
+    fields:["populationServed","enrolled","ageGroups","serviceArea","pctSubsidy"],
+    build:(F,o)=>[F("populationServed"),
+      `The organization currently serves ${F("enrolled")} children across ${F("ageGroups")} in ${F("serviceArea")}.`,
+      o.profile.pctSubsidy ? `Approximately ${o.profile.pctSubsidy}% of families served qualify as low-income or receive subsidized care.` : gapTok("% subsidy / low-income")] },
+
+  { id:"program", label:"Program / project description",
+    kw:["program description","project description","describe the project","describe your program","project narrative","scope of work","activities","what activities","services provided","program design","project plan","proposed project","describe the services","work plan"],
+    fields:["programDesc","ageGroups"],
+    build:(F,o)=>{
+      const out=[F("programDesc")];
+      if(o.programs.length) out.push("Programs: "+o.programs.map(p=>p.name+(p.ages?" ("+p.ages+")":"")).join("; ")+".");
+      return out; } },
+
+  { id:"goals", label:"Goals & measurable outcomes",
+    kw:["goal","objective","outcome","measurable","intended impact","deliverable","what will success","anticipated result","targets","success look like","impact"],
+    fields:["goalsOutcomes"],
+    build:(F)=>[F("goalsOutcomes")] },
+
+  { id:"evaluation", label:"Evaluation plan",
+    kw:["evaluat","how will you evaluate","evaluate progress","evaluation plan","evaluate the program","how will you measure","measure success","assessment plan","data collection","track progress","performance indicator","metrics","monitoring","report on outcomes"],
+    fields:["evaluation"],
+    build:(F)=>[F("evaluation")] },
+
+  { id:"capacity", label:"Organizational capacity",
+    kw:["capacity","organizational capability","qualification","experience managing","track record","ability to carry out","key personnel","who will implement","staffing plan","staff qualifications","management plan","administer the grant","prior experience","demonstrated experience"],
+    fields:["capacity","staffCount","edName","edBio","yearsOperating"],
+    build:(F,o)=>{
+      const out=[F("capacity")];
+      out.push(`The project will be led by ${F("edName")}, ${o.profile.edTitle||"Executive Director"}. ${F("edBio")}`);
+      if(o.staff.length) out.push("Key staff: "+o.staff.map(s=>s.name+(s.title?", "+s.title:"")+(s.cred?" ("+s.cred+")":"")).join("; ")+".");
+      return out; } },
+
+  { id:"budget", label:"Budget narrative",
+    kw:["budget narrative","budget justification","how will the funds be used","use of funds","expenditure","cost breakdown","financial plan","describe the budget","line item"],
+    fields:["annualBudget","revenueMix"],
+    build:(F,o)=>[
+      `${F("legalName")} operates on an annual budget of ${o.profile.annualBudget?money(o.profile.annualBudget):gapTok("Annual operating budget")}.`,
+      gapTok("Project-specific budget — build this per application; do not reuse boilerplate"),
+      F("revenueMix")] },
+
+  { id:"sustain", label:"Sustainability",
+    kw:["sustain","sustainab","after the grant","grant period ends","ongoing funding","continue the program","continue to fund","long-term plan","beyond the grant","future funding","maintain the program","once funding ends"],
+    fields:["sustainability","revenueMix"],
+    build:(F)=>[F("sustainability"), F("revenueMix")] },
+
+  { id:"partner", label:"Partnerships",
+    kw:["partner","collaborat","coalition","stakeholder","community support","memorandum of understanding","mou","letters of support","work with other"],
+    fields:["partnerships"],
+    build:(F)=>[F("partnerships")] },
+
+  { id:"equity", label:"Equity & inclusion",
+    kw:["equity","diversity","inclusion","underserved","equitab","dei","culturally","language access","marginalized","historically"],
+    fields:["equity","populationServed"],
+    build:(F)=>[F("equity"), F("populationServed")] },
+
+  { id:"facility", label:"Facilities & location",
+    kw:["facilit","physical space","building","describe the location","site description","renovat","equipment","premises","where will the program"],
+    fields:["facilities","addr"],
+    build:(F,o)=>[F("facilities"),
+      `The program operates at ${F("addr")}, ${o.profile.city||gapTok("City")}, ${o.profile.state||""} ${o.profile.zip||""}.`] },
+
+  { id:"governance", label:"Governance & board",
+    kw:["board of directors","governance","bylaw","board oversight","leadership structure","board composition","governing body","officers"],
+    fields:["board"],
+    build:(F,o)=>{
+      if(!o.board.length) return [gapTok("Board of Directors — add members in the vault")];
+      return [`${o.profile.legalName||gapTok("Legal name")} is governed by a ${o.board.length}-member Board of Directors: `+
+        o.board.map(b=>b.name+(b.role?", "+b.role:"")+(b.affil?" ("+b.affil+")":"")).join("; ")+
+        `. The Board provides organizational oversight, fiscal accountability, strategic direction, and nonprofit compliance, working collaboratively with the Executive Director.`]; } },
+
+  { id:"quality", label:"Quality & curriculum",
+    kw:["accredit","keystone stars","naeyc","quality rating","curriculum","early learning standards","developmentally appropriate","assessment of children","classroom quality","pre-k counts"],
+    fields:["accreditation","stars","programDesc"],
+    build:(F,o)=>[
+      o.profile.stars?`The program holds a Keystone STARS ${o.profile.stars} designation.`:gapTok("Keystone STARS level"),
+      F("accreditation"), F("programDesc")] },
+
+  { id:"food", label:"Food program / nutrition",
+    kw:["cacfp","food program","meal service","nutrition","food service","summer food","sfsp","meals served","child nutrition"],
+    fields:["mealsPerYear"],
+    build:(F,o)=>[
+      o.profile.mealsPerYear?`The organization participates in the Child and Adult Care Food Program (CACFP) and the Summer Food Service Program (SFSP), serving approximately ${Number(o.profile.mealsPerYear).toLocaleString()} meals and snacks annually.`:gapTok("Meals served per year"),
+      F("programDesc")] },
+
+  { id:"identity", label:"Organization identifiers",
+    kw:["ein","employer identification","tax identification","uei","unique entity","duns","sam.gov","legal name","tax status","501(c)(3)","incorporat","registration number","license number"],
+    fields:["legalName","ein","uei","entityType","incState","licenseNos"],
+    build:(F,o)=>[
+      `Legal name: ${F("legalName")}\nEntity type: ${F("entityType")}\nEIN: ${F("ein")}\nUEI (SAM.gov): ${F("uei")}\nState of incorporation: ${F("incState")}\nLicense / certificate numbers: ${F("licenseNos")}`] }
+];
+
+/* Keywords of 5 characters or fewer must match whole words, so "ein" does not
+   fire on "being". The first keyword of each topic is its canonical term and
+   carries 2.5x weight. A topic only wins with a real lead; otherwise the match
+   is reported as weak so the draft gets flagged for review. */
+function kwHit(t,k){
+  if(k.length<=5) return new RegExp("\\b"+k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b","i").test(t);
+  return t.includes(k);
+}
+function classify(text){
+  const t = String(text||"").toLowerCase();
+  const scored = TOPICS.map(tp=>{
+    let sc=0;
+    tp.kw.forEach((k,i)=>{ if(kwHit(t,k)) sc += Math.min(k.length,22) * (i===0?2.5:1); });
+    return {tp, sc};
+  }).sort((a,b)=>b.sc-a.sc);
+  const best=scored[0], second=scored[1]||{sc:0};
+  if(!best || best.sc < 6) return {topic:null, score:best?Math.round(best.sc):0, conf:"none"};
+  const high = best.sc>=12 || (second.sc>0 && best.sc>=second.sc*2 && best.sc>=9);
+  return {topic:best.tp, score:Math.round(best.sc), conf: high?"high":"low"};
+}
+
+/* ---------- draft builder ---------- */
+function buildDraft(q, o){
+  const used=[], gaps=[];
+  const F = key => {
+    const v = o.profile[key];
+    if(v!=null && String(v).trim()!==""){ used.push(key); return String(v).trim(); }
+    const lab = FIELD_LABEL[key]||key;
+    if(!gaps.includes(lab)) gaps.push(lab);
+    return gapTok(lab);
+  };
+  // 1. prefer a reusable answer from the library
+  const lib = matchAnswers(q.text, o);
+  if(lib.length && lib[0].score >= 3){
+    return { text: lib[0].a.text, gaps:[], used:[], source:"Answer library — "+(lib[0].a.title||"untitled")+(lib[0].a.won?" (funded)":""), alts:lib.slice(1,4) };
+  }
+  // 2. build from vault
+  const cls = classify(q.text);
+  if(!cls.topic){
+    return { text: gapTok("No vault field matches this question — write it here, then save it to the Answer Library for reuse"),
+      gaps:["Unmatched question"], used:[], source:"No match", alts:lib.slice(0,3) };
+  }
+  let parts = cls.topic.build(F, o).filter(x=>x && String(x).trim()!=="");
+  let text = parts.join("\n\n")
+    .replace(/[ \t]+\n/g,"\n")
+    .replace(/([.!?])\s*\.(?!\.)/g,"$1")   // vault field already ended in a period
+    .replace(/\s+([.,;:])/g,"$1")
+    .trim();
+  // trim toward a word limit without cutting mid-sentence
+  if(q.limit && q.limitType==="words" && words(text) > q.limit){
+    const sents = text.split(/(?<=[.!?])\s+/); let out=[];
+    for(const s of sents){ if(words(out.join(" ")+" "+s) > q.limit) break; out.push(s); }
+    if(out.length) text = out.join(" ") + "\n\n"+gapTok("Trimmed to fit the "+q.limit+"-word limit — review what was cut");
+  }
+  return { text, gaps, used, source:"Vault — "+cls.topic.label, alts:lib.slice(0,3) };
+}
+
+function matchAnswers(qtext, o){
+  const t = String(qtext||"").toLowerCase();
+  const toks = (t.match(/[a-z]{4,}/g)||[]).filter(w=>!["that","this","your","will","with","have","from","what","describe","please","provide","include","about","which","their","there","would","should","other","organization"].includes(w));
+  const res=[];
+  for(const a of o.answers){
+    const hay = ((a.question||"")+" "+(a.title||"")+" "+(a.tags||"")).toLowerCase();
+    let sc=0; const seen=new Set();
+    for(const w of toks){ if(!seen.has(w) && hay.includes(w)){ sc++; seen.add(w); } }
+    if(a.won) sc += 1.5;
+    if(sc>0) res.push({a, score:sc});
+  }
+  return res.sort((x,y)=>y.score-x.score);
+}
+
+/* ============================================================
+   RFP PARSER
+   ============================================================ */
+const MONTHS="january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec";
+const DATE_RX = new RegExp(
+  "(?:("+MONTHS+")\\.?\\s+(\\d{1,2})(?:st|nd|rd|th)?,?\\s+(\\d{4}))"+
+  "|(?:(\\d{1,2})\\s+("+MONTHS+")\\.?,?\\s+(\\d{4}))"+
+  "|(\\d{1,2})[\\/\\-](\\d{1,2})[\\/\\-](\\d{2,4})"+
+  "|(\\d{4})-(\\d{2})-(\\d{2})","gi");
+const MON_N = {january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12,jan:1,feb:2,mar:3,apr:4,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12};
+
+function toISO(m){
+  let y,mo,d;
+  if(m[1]){ mo=MON_N[m[1].toLowerCase()]; d=+m[2]; y=+m[3]; }
+  else if(m[5]){ mo=MON_N[m[5].toLowerCase()]; d=+m[4]; y=+m[6]; }
+  else if(m[7]){ mo=+m[7]; d=+m[8]; y=+m[9]; if(y<100) y+=2000; }
+  else if(m[10]){ y=+m[10]; mo=+m[11]; d=+m[12]; }
+  if(!y||!mo||!d||mo>12||d>31) return null;
+  return y+"-"+String(mo).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+}
+
+const DEADLINE_KW = ["deadline","due date","due by","applications due","submit by","submission deadline","must be received","no later than","closes","closing date","postmarked by","due on","proposals due","letters of inquiry due"];
+const DOC_NAMES = [
+  ["501(c)(3) determination letter",/501\s*\(?\s*c\s*\)?\s*\(?\s*3\s*\)?|determination letter|proof of (?:tax[- ]exempt|nonprofit)/i],
+  ["IRS Form 990",/form\s*990|irs\s*990|\b990\b/i],
+  ["Audited financial statements",/audit(?:ed)?\s+financial|financial audit|audited statements|a-133|single audit/i],
+  ["Financial statements / balance sheet",/financial statements|balance sheet|profit and loss|income statement|statement of activities/i],
+  ["Current operating budget",/(?:current|annual|organizational|agency)\s+(?:operating\s+)?budget/i],
+  ["Project budget / budget form",/project budget|budget (?:form|template|worksheet|narrative|justification)|line[- ]item budget/i],
+  ["W-9",/\bw-?9\b/i],
+  ["Board of Directors roster",/board (?:of directors )?(?:roster|list|members with|and affiliations)|list of (?:your )?board/i],
+  ["Articles of Incorporation / bylaws",/articles of incorporation|bylaws|charter documents/i],
+  ["Certificate of insurance",/certificate of insurance|proof of insurance|liability insurance|insurance certificate/i],
+  ["Letters of support / commitment",/letters? of (?:support|commitment|collaboration|intent)|mou|memorand(?:um|a) of understanding/i],
+  ["Program license / certification",/copy of (?:your )?(?:license|certificate of compliance)|licens(?:e|ing) (?:documentation|certificate)|certificate of compliance/i],
+  ["Staff résumés / job descriptions",/r[eé]sum[eé]|curriculum vitae|\bcv\b|job description|position description|staff qualifications? (?:document|attach)/i],
+  ["Organizational chart",/organization(?:al)? chart|org chart/i],
+  ["SAM.gov / UEI registration",/sam\.gov|unique entity id|\buei\b|system for award management/i],
+  ["Logic model / work plan",/logic model|work ?plan|timeline (?:attachment|chart)|gantt/i],
+  ["Evaluation plan",/evaluation plan|measurement plan/i],
+  ["Tax clearance / good standing",/tax clearance|certificate of good standing|good standing/i],
+  ["Indirect cost rate agreement",/indirect cost rate|nicra|negotiated rate/i],
+  ["Signed assurances / certifications",/assurances|certifications? (?:form|page)|signature page|lobbying certification|debarment/i]
+];
+const ATTACH_VERB = /\b(attach|upload|enclose|submit|include|provide|append|accompanied by|must contain|required document)/i;
+const BUDGET_RX = [
+  ["Indirect cost / administrative cap", /indirect (?:cost|rate)s?|administrative (?:cost|cap|rate)|de minimis|overhead/i],
+  ["Match / cost share requirement", /\bmatch(?:ing)?\b|cost[- ]shar|in[- ]kind|leverag(?:e|ed) funds|non[- ]federal share/i],
+  ["Unallowable costs", /unallowable|not allowable|may not be used|ineligible (?:cost|expense)|cannot be used (?:for|to)|prohibit/i],
+  ["Supplanting restriction", /supplant/i],
+  ["Equipment / capital limits", /capital (?:expense|improvement|cost)|equipment (?:over|exceeding|purchase)|construction cost/i],
+  ["Reporting requirement", /(?:financial|progress|interim|final) report|reporting requirement|report(?:s)? (?:are|is) due|quarterly report/i],
+  ["Payment / reimbursement terms", /reimburse|advance payment|drawdown|invoice/i]
+];
+const AMOUNT_RX = /\$\s?([\d,]{3,}(?:\.\d{2})?)(?:\s*(?:-|–|to)\s*\$?\s?([\d,]{3,}))?/g;
+
+function parseRFP(raw){
+  const text = String(raw||"").replace(/\r/g,"");
+  const lines = text.split("\n").map(l=>l.replace(/\s+/g," ").trim());
+  const out = { deadline:"", deadlineLine:"", funder:"", amountMin:"", amountMax:"", questions:[],
+    attachments:[], budget:[], scoring:[], eligibility:[], raw:text };
+
+  /* --- deadline --- */
+  let bestD=null;
+  lines.forEach(l=>{
+    const low=l.toLowerCase();
+    if(!DEADLINE_KW.some(k=>low.includes(k))) return;
+    DATE_RX.lastIndex=0; let m;
+    while((m=DATE_RX.exec(l))){
+      const iso=toISO(m); if(!iso) continue;
+      const dt=daysTo(iso);
+      if(dt!=null && dt>=-45 && (!bestD || dt<bestD.dt)){ bestD={iso,dt,line:l}; }
+    }
+  });
+  if(!bestD){ // fall back: any future date in the document
+    DATE_RX.lastIndex=0; let m;
+    while((m=DATE_RX.exec(text))){
+      const iso=toISO(m); if(!iso) continue; const dt=daysTo(iso);
+      if(dt!=null && dt>=0 && (!bestD || dt<bestD.dt)) bestD={iso,dt,line:"(date found in document, not labelled as a deadline)"};
+    }
+  }
+  if(bestD){ out.deadline=bestD.iso; out.deadlineLine=bestD.line; }
+
+  /* --- award amounts --- */
+  const amts=[]; AMOUNT_RX.lastIndex=0; let am;
+  while((am=AMOUNT_RX.exec(text))){
+    const a=+am[1].replace(/,/g,""); if(a>=500) amts.push(a);
+    if(am[2]){ const b=+am[2].replace(/,/g,""); if(b>=500) amts.push(b); }
+  }
+  if(amts.length){ out.amountMin=Math.min(...amts); out.amountMax=Math.max(...amts); }
+
+  /* --- funder guess: first title-ish line --- */
+  for(const l of lines){
+    if(l.length>6 && l.length<90 && /foundation|trust|department|office of|fund\b|united way|commission|bureau|initiative|institute|corporation|agency|council/i.test(l)){ out.funder=l; break; }
+  }
+
+  /* --- questions --- */
+  const VERB = /^(describe|explain|provide|list|identify|summar|discuss|outline|detail|state|tell us|share|address|demonstrate|indicate|specify|define|document|include a (?:brief )?(?:description|narrative|statement)|what|why|how|who|where|which|in what)/i;
+  const NUMBERED = /^(?:(?:\d{1,2}|[a-z]|[ivx]{1,4})[\.\)]\s+|q\s*\d{1,2}[\.\):]?\s+|#\d{1,2}\s+|[-–•*]\s+)/i;
+  const SKIP = /^(?:page\s*\d|section\s+[ivx\d]|table of contents|appendix|see (?:page|section)|deadline|due date|contact|phone|email|fax|http|www\.)/i;
+  const SCORE_LINE = /\(\s*\d{1,3}\s*(?:points?|pts?|%)\s*\)\s*\.?$|[—–-]\s*\d{1,3}\s*(?:points?|pts?)\s*\.?$|\b\d{1,3}\s*points?\s*$/i;
+  const LIMIT_TAIL = /\s*[\(\[][^()\[\]]{0,40}?\d{2,5}\s*(?:word|character)s?[^()\[\]]{0,20}?[\)\]]\s*\.?$/i;
+  const seenQ = new Set();
+
+  for(let i=0;i<lines.length;i++){
+    let l = lines[i];
+    if(!l || l.length<18 || l.length>700) continue;
+    if(SKIP.test(l) || SCORE_LINE.test(l)) continue;
+    let stripped = l.replace(NUMBERED,"").trim();
+    const isQ = /\?\s*$/.test(l) || VERB.test(stripped) || (NUMBERED.test(l) && VERB.test(stripped));
+    if(!isQ) continue;
+    if(/^\s*(?:describe|list|provide)?\s*$/i.test(stripped)) continue;
+    const key = stripped.toLowerCase().slice(0,70);
+    if(seenQ.has(key)) continue; seenQ.add(key);
+
+    // look for a word/character limit in this line and the next two
+    let limit="", limitType="";
+    const probe = [l, lines[i+1]||"", lines[i+2]||""].join(" ");
+    const lm = probe.match(/(?:(?:maximum|max|no more than|not (?:to )?exceed|limit(?:ed)? (?:to|of)?|up to|within|about)\s*:?\s*)?(\d{2,5})[\s-]*(word|character)s?\b/i)
+            || probe.match(/\((\d{2,5})\s*(word|character)s?(?:\s*(?:max|maximum|limit|or less))?\)/i);
+    if(lm){ limit=+lm[1]; limitType=lm[2].toLowerCase()==="word"?"words":"chars"; }
+    stripped = stripped.replace(LIMIT_TAIL,"").trim();
+    if(stripped.length<12) continue;
+
+    const cls = classify(stripped);
+    out.questions.push({ id:uid(), text:stripped, limit, limitType,
+      topicId: cls.topic?cls.topic.id:"", topicLabel: cls.topic?cls.topic.label:"", conf: cls.conf });
+  }
+
+  /* --- required attachments ---
+     Only count a document when it appears somewhere that actually asks for it:
+     a line with an attach/submit verb, a line saying "required", or a line inside
+     an attachment checklist block. Scoring lines are excluded. Each source line is
+     claimed once, so "audited financial statements" does not also register as the
+     generic "financial statements". */
+  const ZONE_START = /required (?:documents|attachments|materials|forms)|^attachments?\s*:?\s*$|documents to (?:submit|attach|include)|supporting (?:documents|materials)|application (?:checklist|materials)|(?:must|should) (?:attach|submit|include|provide) the following|the following (?:documents|items|materials|attachments)/i;
+  const ZONE_END = /^(?:budget instructions|review criteria|scoring|evaluation criteria|eligibility|application questions|questions|deadline|submission instructions|contact)/i;
+  const zone=new Set();
+  lines.forEach((l,i)=>{
+    if(!ZONE_START.test(l)) return;
+    for(let j=i;j<Math.min(lines.length,i+30);j++){ if(j>i && ZONE_END.test(lines[j])) break; zone.add(j); }
+  });
+  const claimed=new Set(), found=[];
+  for(const [name,rx] of DOC_NAMES){
+    let ctx="", required=false, idx=-1;
+    for(let i=0;i<lines.length;i++){
+      const l=lines[i];
+      if(!l || claimed.has(i) || SCORE_LINE.test(l) || !rx.test(l)) continue;
+      const asked = ATTACH_VERB.test(l) || /\brequired\b/i.test(l) || zone.has(i);
+      if(!asked) continue;
+      ctx=l; idx=i; required = /\brequired\b/i.test(l) || /\bmust\b/i.test(l) || zone.has(i);
+      break;
+    }
+    if(idx>=0){ claimed.add(idx); found.push({name, ctx, required}); }
+  }
+  out.attachments = found;
+
+  /* --- budget rules --- */
+  for(const [name,rx] of BUDGET_RX){
+    const hits = lines.filter(l=>rx.test(l) && l.length>12).slice(0,2);
+    if(hits.length) out.budget.push({name, lines:hits});
+  }
+
+  /* --- scoring criteria --- */
+  lines.forEach(l=>{
+    const m = l.match(/^(.{3,80}?)[\s\.\-–:]*\(?\s*(\d{1,3})\s*(?:points?|pts?|%)\s*\)?\s*$/i);
+    if(m && +m[2]<=100 && +m[2]>0 && !/^\d+$/.test(m[1].trim())) out.scoring.push({crit:m[1].replace(/[\.\-–:\s]+$/,"").trim(), pts:+m[2]});
+    else {
+      const m2 = l.match(/^(.{3,80}?)\s*[—–-]\s*(\d{1,3})\s*(?:points?|pts?)\b/i);
+      if(m2 && +m2[2]<=100) out.scoring.push({crit:m2[1].trim(), pts:+m2[2]});
+    }
+  });
+  if(out.scoring.length>14) out.scoring=out.scoring.slice(0,14);
+
+  /* --- eligibility --- */
+  lines.forEach((l,i)=>{ if(/eligib/i.test(l) && l.length>25 && out.eligibility.length<6) out.eligibility.push(l); });
+
+  return out;
+}
+
+/* ============================================================
+   VIEW: DASHBOARD
+   ============================================================ */
+function vaultStats(o){
+  let total=0, filled=0;
+  VAULT_SECTIONS.forEach(s=>s.f.forEach(k=>{ total++; if(String(o.profile[k]||"").trim()) filled++; }));
+  return {total, filled, pct: total?Math.round(filled/total*100):0};
+}
+function docStats(o){
+  const exp=[], soon=[], missing=[];
+  o.docs.forEach(d=>{
+    if(d.status==="missing"||d.status==="unknown") missing.push(d);
+    const dt=daysTo(d.expires);
+    if(dt!=null){ if(dt<0) exp.push(d); else if(dt<=60) soon.push(d); }
+  });
+  return {exp, soon, missing};
+}
+
+function viewDash(el){
+  const o=org(), vs=vaultStats(o), ds=docStats(o);
+  const open = o.apps.filter(a=>isOpen(a));
+  const upcoming = o.apps.filter(a=>a.deadline && daysTo(a.deadline)!=null && daysTo(a.deadline)>=-7)
+    .sort((a,b)=>(a.deadline||"").localeCompare(b.deadline||""));
+  const reports = o.apps.filter(a=>a.reportingDue && daysTo(a.reportingDue)!=null)
+    .sort((a,b)=>(a.reportingDue||"").localeCompare(b.reportingDue||""));
+  const awarded = o.apps.filter(a=>a.status==="Awarded");
+  const awardTotal = awarded.reduce((s,a)=>s+(+a.amount||0),0);
+  const mcls = vs.pct<50?"lo":vs.pct<80?"mid":"";
+
+  el.innerHTML = `
+  <div class="ch">
+    <div><h1>${esc(o.name)}</h1>
+      <small>Grant workspace · ${o.apps.length} application${o.apps.length===1?"":"s"} tracked · ${o.answers.length} reusable answer${o.answers.length===1?"":"s"}</small></div>
+    <div class="hspace"></div>
+    <div class="btnrow">
+      <button class="b o" onclick="App.go('search')">Find grants</button>
+      <button class="b" onclick="App.go('rfp')">+ New application</button>
+      <button class="b g" onclick="App.go('vault')">Edit vault</button>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="stat"><div class="n">${vs.pct}%</div><div class="l">Vault complete</div>
+      <div class="meter"><i class="${mcls}" style="width:${vs.pct}%"></i></div>
+      <small>${vs.filled} of ${vs.total} fields</small></div>
+    <div class="stat ${open.length?"a":""}"><div class="n">${open.length}</div><div class="l">In progress</div></div>
+    <div class="stat ${(ds.exp.length+ds.missing.length)?"d":""}"><div class="n">${ds.exp.length+ds.missing.length}</div><div class="l">Document issues</div></div>
+    <div class="stat"><div class="n">${money(awardTotal).replace("$","$")}</div><div class="l">Awarded (tracked)</div></div>
+  </div>
+
+  ${window.dashExtras?dashExtras(o):""}
+  ${vs.pct<70?`<div class="note w"><strong>Fill the vault first.</strong> The draft engine only writes what your vault can support — every empty field becomes a flagged gap instead of a sentence. You are at ${vs.pct}%. <button class="lk" onclick="App.go('vault')">Open the vault</button></div>`:""}
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>Deadlines</h3>
+      ${upcoming.length? `<div class="tw"><table><thead><tr><th>Application</th><th>Due</th><th class="r">Days</th><th>Status</th></tr></thead><tbody>
+        ${upcoming.slice(0,8).map(a=>{const d=daysTo(a.deadline);
+          const p = d<0?"bad":d<=7?"bad":d<=21?"warn":"ok";
+          return `<tr><td><button class="lk" onclick="openApp('${a.id}')">${esc(a.title||a.funder||"Untitled")}</button><br><small>${esc(a.funder||"")}</small></td>
+            <td>${fmtD(a.deadline)}</td><td class="r"><span class="pill ${p}">${d<0?"past":d}</span></td><td><small>${esc(a.status||"")}</small></td></tr>`;}).join("")}
+      </tbody></table></div>`
+      : `<div class="empty"><div class="ic">◷</div>No deadlines tracked yet.<br><button class="lk" onclick="App.go('rfp')">Paste an RFP to start one</button></div>`}
+    </div>
+
+    <div class="card">
+      <h3>Document readiness</h3>
+      ${(ds.exp.length||ds.soon.length||ds.missing.length)?`
+        ${ds.exp.length?`<div class="note d"><strong>Expired (${ds.exp.length}):</strong> ${ds.exp.map(d=>esc(d.name)).join(", ")}</div>`:""}
+        ${ds.soon.length?`<div class="note w"><strong>Expiring within 60 days (${ds.soon.length}):</strong> ${ds.soon.map(d=>esc(d.name)+" — "+fmtD(d.expires)).join("; ")}</div>`:""}
+        ${ds.missing.length?`<div class="note"><strong>Not confirmed on hand (${ds.missing.length}):</strong> ${ds.missing.map(d=>esc(d.name)).join(", ")}</div>`:""}
+        <button class="b g sm" onclick="App.go('docs')">Manage documents</button>`
+      : `<div class="note g">All ${o.docs.length} tracked documents are on hand and current.</div><button class="b g sm" onclick="App.go('docs')">Manage documents</button>`}
+    </div>
+  </div>
+
+  ${reports.length?`<div class="card"><h3>Post-award reporting</h3>
+    <div class="tw"><table><thead><tr><th>Grant</th><th>Report due</th><th class="r">Days</th></tr></thead><tbody>
+    ${reports.map(a=>{const d=daysTo(a.reportingDue);return `<tr><td>${esc(a.title||a.funder)}</td><td>${fmtD(a.reportingDue)}</td>
+      <td class="r"><span class="pill ${d<0?"bad":d<=30?"warn":"ok"}">${d<0?"past due":d}</span></td></tr>`;}).join("")}
+    </tbody></table></div></div>`:""}
+
+  <div class="card">
+    <h3>Applications</h3>
+    ${o.apps.length?`<div class="tw"><table><thead><tr><th>Title</th><th>Funder</th><th class="r">Ask</th><th>Deadline</th><th>Status</th><th>Drafted</th><th></th></tr></thead><tbody>
+      ${o.apps.map(a=>{
+        const pr=appProgress(a);
+        return `<tr><td><button class="lk" onclick="openApp('${a.id}')">${esc(a.title||"Untitled")}</button></td>
+        <td><small>${esc(a.funder||"—")}</small></td><td class="r">${money(a.amount)}</td><td>${fmtD(a.deadline)}</td>
+        <td><span class="pill ${stagePill(a.status)}">${esc(a.status||"—")}</span></td>
+        <td><small>${pr.complete}/${pr.total}${pr.gaps?` <span class="pill bad">${pr.gaps} gaps</span>`:""}</small></td>
+        <td class="r"><button class="lk dz" onclick="delApp('${a.id}')">delete</button></td></tr>`;}).join("")}
+    </tbody></table></div>`:`<div class="empty"><div class="ic">▱</div>No applications yet.<br><button class="lk" onclick="App.go('rfp')">Paste a funding announcement</button></div>`}
+  </div>`;
+}
+
+/* ============================================================
+   VIEW: ORG VAULT
+   ============================================================ */
+function setP(k,v){ org().profile[k]=v; save(); if(k==="legalName"&&v){ } }
+function setOrgName(v){ org().name=v||"Untitled"; save(); renderNav(); }
+
+function fieldHTML(k,o){
+  const v = nn(o.profile[k]); const lab = FIELD_LABEL[k]||k;
+  if(LONG_FIELDS.has(k))
+    return `<div class="f"><label for="f_${k}">${esc(lab)}</label>
+      <textarea id="f_${k}" rows="${k==="mission"||k==="licenseNos"?3:4}" onchange="setP('${k}',this.value)" placeholder="${esc(PLACE[k]||"")}">${esc(v)}</textarea>
+      <div class="hint">${esc(HINT[k]||"")}</div></div>`;
+  const type = NUM_FIELDS.has(k)?"number":DATE_FIELDS.has(k)?"date":"text";
+  return `<div class="f"><label for="f_${k}">${esc(lab)}</label>
+    <input id="f_${k}" type="${type}" value="${esc(v)}" onchange="setP('${k}',this.value)" placeholder="${esc(PLACE[k]||"")}">
+    ${HINT[k]?`<div class="hint">${esc(HINT[k])}</div>`:""}</div>`;
+}
+const PLACE={ ein:"12-3456789", uei:"12 characters from SAM.gov", samStatus:"Active / Expired / Not registered",
+  ntee:"e.g. P33 Child Day Care", mission:"One or two sentences, as the board approved it.",
+  needStatement:"The community problem, with local data and a source for each number.",
+  goalsOutcomes:"Goal 1: … Outcome: X% of Y will … measured by …",
+  evaluation:"What you measure, how you collect it, who reviews it, how often.",
+  revenueMix:"e.g. Tuition 45%, CACFP 20%, subsidy 25%, grants 10%",
+  sustainability:"What happens to this work after the grant period ends.",
+  equity:"How the program reaches and serves underserved families.",
+  partnerships:"Named partners and what each contributes." };
+const HINT={ uei:"Replaced DUNS for federal grants. Required for Grants.gov.",
+  samExpires:"SAM registration lapses annually and blocks federal awards.",
+  needStatement:"Cite a source for every statistic — reviewers check these.",
+  annualBudget:"Whole dollars, current fiscal year.",
+  capacity:"Staff, systems, years operating, prior grants administered.",
+  mealsPerYear:"CACFP and SFSP meals and snacks combined." };
+
+function viewVault(el){
+  const o=org(), vs=vaultStats(o);
+  el.innerHTML = `
+  <div class="ch">
+    <div><h1>Organization Vault</h1><small>Fill once. Every draft, autofill, and attachment list reads from here.</small></div>
+    <div class="hspace"></div>
+    <div style="min-width:170px"><div class="meter"><i class="${vs.pct<50?"lo":vs.pct<80?"mid":""}" style="width:${vs.pct}%"></i></div>
+      <small>${vs.filled}/${vs.total} fields · ${vs.pct}%</small></div>
+  </div>
+
+  <div class="card">
+    <div class="f" style="max-width:420px"><label>Display name for this organization</label>
+      <input value="${esc(o.name)}" onchange="setOrgName(this.value)"></div>
+  </div>
+
+  ${VAULT_SECTIONS.map(s=>{
+    const fl=s.f.filter(k=>String(o.profile[k]||"").trim()).length;
+    return `<details ${s.k==="ident"?"open":""}>
+      <summary>${esc(s.t)} <span class="pill ${fl===s.f.length?"ok":fl?"warn":"bad"}" style="margin-left:auto">${fl}/${s.f.length}</span></summary>
+      <div class="dbody">
+        ${s.d?`<div class="note">${esc(s.d)}</div>`:""}
+        <div class="grid ${s.k==="narr"?"":"g2"}">${s.f.map(k=>fieldHTML(k,o)).join("")}</div>
+      </div></details>`;
+  }).join("")}
+
+  <details>
+    <summary>Board of Directors <span class="pill ${o.board.length?"ok":"bad"}" style="margin-left:auto">${o.board.length}</span></summary>
+    <div class="dbody">${listEditor("board",["name|Name","role|Role","affil|Affiliation / employer","term|Term"])}</div>
+  </details>
+  <details>
+    <summary>Key staff <span class="pill ${o.staff.length?"ok":"neu"}" style="margin-left:auto">${o.staff.length}</span></summary>
+    <div class="dbody"><div class="note">Funders ask who will do the work. Add the people named in applications.</div>
+      ${listEditor("staff",["name|Name","title|Title","cred|Credentials","bio|Short bio|long"])}</div>
+  </details>
+  <details>
+    <summary>Programs / classrooms <span class="pill ${o.programs.length?"ok":"neu"}" style="margin-left:auto">${o.programs.length}</span></summary>
+    <div class="dbody">${listEditor("programs",["name|Program name","ages|Ages served","cap|Capacity","desc|Description|long"])}</div>
+  </details>
+  <details>
+    <summary>Grant history <span class="pill ${o.awards.length?"ok":"neu"}" style="margin-left:auto">${o.awards.length}</span></summary>
+    <div class="dbody"><div class="note">Prior awards are evidence of capacity. List them even if small.</div>
+      ${listEditor("awards",["funder|Funder","amount|Amount|num","year|Year","purpose|Purpose","status|Status"])}</div>
+  </details>`;
+}
+
+function listEditor(coll, spec){
+  const o=org(), rows=o[coll];
+  const cols = spec.map(s=>{ const p=s.split("|"); return {k:p[0], l:p[1], t:p[2]||"text"}; });
+  return `${rows.map((r,i)=>`<div class="rowbox">
+      <div class="ch"><h4>${esc(r[cols[0].k]||"(unnamed)")}</h4><div class="hspace"></div>
+        <button class="lk dz" onclick="delRow('${coll}','${r.id}')">remove</button></div>
+      <div class="grid g2">${cols.map(c=>c.t==="long"
+        ? `<div class="f" style="grid-column:1/-1"><label>${esc(c.l)}</label><textarea rows="3" onchange="setRow('${coll}','${r.id}','${c.k}',this.value)">${esc(nn(r[c.k]))}</textarea></div>`
+        : `<div class="f"><label>${esc(c.l)}</label><input type="${c.t==="num"?"number":"text"}" value="${esc(nn(r[c.k]))}" onchange="setRow('${coll}','${r.id}','${c.k}',this.value)"></div>`).join("")}</div>
+    </div>`).join("")}
+    <button class="b g sm" onclick="addRow('${coll}')">+ Add</button>`;
+}
+function addRow(coll){ org()[coll].push({id:uid()}); save(); render(); }
+function delRow(coll,id){ const o=org(); o[coll]=o[coll].filter(r=>r.id!==id); save(); render(); }
+function setRow(coll,id,k,v){ const r=org()[coll].find(x=>x.id===id); if(r){ r[k]=v; save(); } }
+
+/* ============================================================
+   VIEW: DOCUMENTS
+   ============================================================ */
+const DOC_CATS=["Legal/Tax","Licensing","Governance","Financial","Insurance","Federal","Program","Staff","Other"];
+const COMMON_DOCS=["IRS 501(c)(3) determination letter","IRS Form 990 (most recent)","W-9","Audited financial statements","Current year operating budget","Board of Directors roster","Articles of Incorporation / bylaws","Certificate of liability insurance","PA DHS Certificate of Compliance (license)","SAM.gov registration confirmation","Organizational chart","Letters of support","Staff résumés","Indirect cost rate agreement","Certificate of good standing","Logic model / work plan"];
+
+function viewDocs(el){
+  const o=org(), ds=docStats(o);
+  el.innerHTML=`
+  <div class="ch"><div><h1>Document Library</h1>
+    <small>The attachments funders ask for. Track what you have, where it lives, and when it expires.</small></div>
+    <div class="hspace"></div><button class="b" onclick="addDoc()">+ Add document</button></div>
+
+  ${window.docsBanner?docsBanner():`<div class="note">This tracks the <em>status and location</em> of each document. Turn on cloud sync in Settings to store the files themselves; otherwise paste a link to your own drive in the Location column.</div>`}
+
+  ${ds.exp.length?`<div class="note d"><strong>${ds.exp.length} expired:</strong> ${ds.exp.map(d=>esc(d.name)).join(", ")}</div>`:""}
+  ${ds.soon.length?`<div class="note w"><strong>${ds.soon.length} expiring within 60 days:</strong> ${ds.soon.map(d=>esc(d.name)).join(", ")}</div>`:""}
+
+  <div class="card pad0"><div class="tw"><table>
+    <thead><tr><th>Document</th><th>Category</th><th>Status</th><th>Expires</th><th>Location / link</th><th>Notes</th><th></th></tr></thead>
+    <tbody>${o.docs.length?o.docs.map(d=>{
+      const dt=daysTo(d.expires);
+      const sp = d.status==="have"?(dt!=null&&dt<0?"bad":dt!=null&&dt<=60?"warn":"ok"):d.status==="missing"?"bad":"neu";
+      return `<tr>
+      <td><input value="${esc(d.name)}" onchange="setDoc('${d.id}','name',this.value)" style="min-width:200px"></td>
+      <td><select onchange="setDoc('${d.id}','cat',this.value)">${DOC_CATS.map(c=>`<option ${c===d.cat?"selected":""}>${c}</option>`).join("")}</select></td>
+      <td><select onchange="setDoc('${d.id}','status',this.value);render()">
+        <option value="have" ${d.status==="have"?"selected":""}>On hand</option>
+        <option value="unknown" ${d.status==="unknown"?"selected":""}>Not confirmed</option>
+        <option value="missing" ${d.status==="missing"?"selected":""}>Missing</option>
+        <option value="na" ${d.status==="na"?"selected":""}>N/A</option></select>
+        <div style="margin-top:4px"><span class="pill ${sp}">${dt!=null&&dt<0?"expired":dt!=null&&dt<=60?dt+"d":d.status==="have"?"ok":d.status==="missing"?"missing":d.status==="na"?"n/a":"check"}</span></div></td>
+      <td><input type="date" value="${esc(nn(d.expires))}" onchange="setDoc('${d.id}','expires',this.value);render()"></td>
+      <td><input value="${esc(nn(d.loc))}" onchange="setDoc('${d.id}','loc',this.value)" placeholder="folder or URL" style="min-width:170px">${window.docCloudHTML?docCloudHTML(d):""}</td>
+      <td><input value="${esc(nn(d.notes))}" onchange="setDoc('${d.id}','notes',this.value)" style="min-width:140px"></td>
+      <td><button class="lk dz" onclick="delDoc('${d.id}')">×</button></td></tr>`;}).join("")
+      :`<tr><td colspan="7"><div class="empty"><div class="ic">▤</div>No documents tracked.</div></td></tr>`}</tbody>
+  </table></div></div>
+
+  <div class="card"><h3>Quick add</h3><div class="btnrow">
+    ${COMMON_DOCS.filter(n=>!o.docs.some(d=>d.name.toLowerCase()===n.toLowerCase()))
+      .map(n=>`<button class="b g sm" onclick="addDoc(${JSON.stringify(n).replace(/"/g,"&quot;")})">+ ${esc(n)}</button>`).join("")||"<small>All common documents are already in your library.</small>"}
+  </div></div>`;
+}
+function addDoc(name){ org().docs.push({id:uid(),name:name||"New document",cat:"Other",status:"unknown",expires:"",loc:"",notes:""}); save(); render(); }
+function setDoc(id,k,v){ const d=org().docs.find(x=>x.id===id); if(d){ d[k]=v; save(); } }
+function delDoc(id){ const o=org(); o.docs=o.docs.filter(d=>d.id!==id); save(); render(); }
+
+/* ============================================================
+   VIEW: ANSWER LIBRARY
+   ============================================================ */
+function viewAnswers(el){
+  const o=org();
+  el.innerHTML=`
+  <div class="ch"><div><h1>Answer Library</h1>
+    <small>Answers you have already written. The draft engine checks here before it builds from the vault.</small></div>
+    <div class="hspace"></div><button class="b" onclick="addAnswer()">+ Add answer</button></div>
+
+  <div class="note g">Mark an answer <strong>funded</strong> when it came from a successful application. Funded answers are preferred when more than one matches.</div>
+
+  ${o.answers.length? o.answers.map(a=>`
+    <details>
+      <summary>${esc(a.title||"(untitled)")} ${a.won?'<span class="pill ok">funded</span>':""}
+        <span class="hspace" style="flex:1"></span><small>${words(a.text)} words</small></summary>
+      <div class="dbody">
+        <div class="grid g2">
+          <div class="f"><label>Title</label><input value="${esc(nn(a.title))}" onchange="setAns('${a.id}','title',this.value);renderNav()"></div>
+          <div class="f"><label>Funder / source</label><input value="${esc(nn(a.funder))}" onchange="setAns('${a.id}','funder',this.value)"></div>
+        </div>
+        <div class="f"><label>The question it answered</label>
+          <textarea rows="2" onchange="setAns('${a.id}','question',this.value)" placeholder="Paste the funder's exact question — this is what matching keys on.">${esc(nn(a.question))}</textarea></div>
+        <div class="f"><label>Answer text</label>
+          <textarea rows="8" onchange="setAns('${a.id}','text',this.value);render()">${esc(nn(a.text))}</textarea>
+          <div class="wc">${words(a.text)} words</div></div>
+        <div class="grid g3">
+          <div class="f"><label>Tags</label><input value="${esc(nn(a.tags))}" onchange="setAns('${a.id}','tags',this.value)" placeholder="need, literacy, staffing"></div>
+          <div class="f"><label>Year</label><input value="${esc(nn(a.year))}" onchange="setAns('${a.id}','year',this.value)"></div>
+          <div class="f"><label>&nbsp;</label><label class="chk"><input type="checkbox" ${a.won?"checked":""} onchange="setAns('${a.id}','won',this.checked);render()"> This application was funded</label></div>
+        </div>
+        <div class="btnrow"><button class="b g sm" onclick="copyText(${JSON.stringify(a.id)})">Copy text</button>
+          <button class="b dz sm" onclick="delAns('${a.id}')">Delete</button></div>
+      </div></details>`).join("")
+  : `<div class="card"><div class="empty"><div class="ic">▭</div>No saved answers yet.<br>
+      <small>Add your strongest narrative from a past application, or save a draft from the Drafts tab.</small></div></div>`}`;
+}
+function addAnswer(pre){ org().answers.unshift(Object.assign({id:uid(),title:"New answer",question:"",text:"",tags:"",funder:"",year:String(new Date().getFullYear()),won:false},pre||{})); save(); render(); }
+function setAns(id,k,v){ const a=org().answers.find(x=>x.id===id); if(a){ a[k]=v; save(); } }
+function delAns(id){ if(!confirm("Delete this saved answer?"))return; const o=org(); o.answers=o.answers.filter(a=>a.id!==id); save(); render(); }
+function copyText(id){ const a=org().answers.find(x=>x.id===id); if(a) navigator.clipboard.writeText(a.text).then(()=>toast("Copied")); }
+
+/* ============================================================
+   VIEW: RFP READER
+   ============================================================ */
+let lastParse=null;
+function viewRFP(el){
+  el.innerHTML=`
+  <div class="ch"><div><h1>RFP Reader</h1>
+    <small>Paste a funding announcement. It pulls out the questions, word limits, required attachments, budget rules, scoring, and deadline.</small></div></div>
+
+  <div class="card">
+    <div class="f"><label>Paste the full announcement, NOFO, or application form text</label>
+      <textarea id="rfpIn" rows="12" placeholder="Paste everything — eligibility, application questions, attachment list, budget instructions, scoring rubric, deadline. More text means a better read."></textarea>
+      <div class="hint">Or load a file: <input type="file" accept=".pdf,.txt,.md,.docx" onchange="loadRfpFile(this)" style="width:auto;display:inline-block;padding:3px;font-size:.8rem"> <span id="rfpFileState"></span><br>
+        <strong>Read with AI</strong> sends the text to Claude for a careful read. <strong>Quick read</strong> runs offline in this browser.</div></div>
+    <div class="btnrow">
+      <button class="b n" id="aiParseBtn" onclick="aiParse()"><span class="ai-badge">AI</span> Read with AI</button>
+      <button class="b" onclick="doParse()">Quick read (offline)</button>
+      <button class="b g" onclick="document.getElementById('rfpIn').value='';lastParse=null;render()">Clear</button>
+      <button class="b g" onclick="manualApp()">Skip — create a blank application</button>
+    </div>
+  </div>
+
+  <div id="parseOut">${lastParse?parseOutHTML(lastParse):""}</div>`;
+  if(lastParse) document.getElementById("rfpIn").value = lastParse.raw;
+}
+function doParse(){
+  const raw=document.getElementById("rfpIn").value;
+  if(!raw.trim()){ toast("Paste the announcement text first","err"); return; }
+  lastParse=parseRFP(raw);
+  document.getElementById("parseOut").innerHTML=parseOutHTML(lastParse);
+  toast(`Found ${lastParse.questions.length} question${lastParse.questions.length===1?"":"s"}, ${lastParse.attachments.length} attachment${lastParse.attachments.length===1?"":"s"}`);
+  document.getElementById("parseOut").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function parseOutHTML(p){
+  const o=org();
+  const dt=daysTo(p.deadline);
+  const matchedDocs = p.attachments.map(a=>{
+    const hit = o.docs.find(d=>fuzzyDoc(d.name,a.name));
+    return Object.assign({},a,{have: hit? hit.status==="have" : false, known: !!hit, docName: hit?hit.name:""});
+  });
+  const haveN = matchedDocs.filter(m=>m.have).length;
+  return `
+  <div class="card">
+    <div class="ch"><h2>What it found</h2>${p.ai?' <span class="ai-badge">AI READ</span>':' <span class="pill neu">quick read</span>'}<div class="hspace"></div>
+      <button class="b o" onclick="createAppFromParse()">Create application from this</button></div>
+
+    <div class="grid g4" style="margin-bottom:14px">
+      <div class="stat"><div class="n">${p.questions.length}</div><div class="l">Questions</div></div>
+      <div class="stat ${dt!=null&&dt<=21?"d":""}"><div class="n" style="font-size:1.15rem">${p.deadline?fmtD(p.deadline):"—"}</div><div class="l">Deadline${dt!=null?" · "+dt+"d":""}</div></div>
+      <div class="stat"><div class="n">${p.attachments.length}</div><div class="l">Attachments named</div></div>
+      <div class="stat"><div class="n" style="font-size:1.15rem">${p.amountMax?money(p.amountMax):"—"}</div><div class="l">Largest amount seen</div></div>
+    </div>
+
+    ${p.summary?`<div class="note g"><strong>Summary.</strong> ${esc(p.summary)}${p.fit?`<br><strong>Fit for ${esc(o.name)}:</strong> ${esc(p.fit)}`:""}</div>`:""}
+    ${p.deadline?`<div class="note ${dt!=null&&dt<14?"d":"w"}"><strong>Deadline read as ${fmtD(p.deadline)}</strong>${dt!=null?` — ${dt<0?"already past":dt+" days out"}`:""}.
+      <br><small>From: ${esc(p.deadlineLine)}</small><br><small>Confirm this against the announcement before you rely on it.</small></div>`
+      :`<div class="note d"><strong>No deadline found.</strong> Set it by hand on the application.</div>`}
+
+    ${p.questions.length?`
+    <h3>Questions detected</h3>
+    <div class="tw"><table><thead><tr><th>#</th><th>Question</th><th>Limit</th><th>Vault topic</th></tr></thead><tbody>
+      ${p.questions.map((q,i)=>`<tr><td>${i+1}</td><td>${esc(q.text)}</td>
+        <td>${q.limit?`<span class="pill neu">${q.limit} ${q.limitType}</span>`:"—"}</td>
+        <td>${q.topicLabel?`<span class="pill ${q.conf==="low"?"warn":"ok"}">${esc(q.topicLabel)}${q.conf==="low"?" — weak":""}</span>`:`<span class="pill bad">no match</span>`}</td></tr>`).join("")}
+    </tbody></table></div>
+    ${p.questions.filter(q=>!q.topicId).length?`<div class="note w">${p.questions.filter(q=>!q.topicId).length} question(s) have no matching vault content. You will write those yourself — then save them to the Answer Library so the next application reuses them.</div>`:""}
+    `:`<div class="note d"><strong>No questions detected.</strong> The text may be a summary page rather than the application itself. You can still create the application and add questions by hand.</div>`}
+
+    ${matchedDocs.length?`<h3 style="margin-top:18px">Required attachments</h3>
+    <div class="note ${haveN===matchedDocs.length?"g":"w"}">${haveN} of ${matchedDocs.length} are marked on hand in your Document Library.</div>
+    <div class="tw"><table><thead><tr><th>Document</th><th>Your status</th><th>Where it was mentioned</th></tr></thead><tbody>
+      ${matchedDocs.map(m=>`<tr><td>${esc(m.name)}${m.required?' <span class="pill org">required</span>':""}</td>
+        <td>${m.have?'<span class="pill ok">on hand</span>':m.known?'<span class="pill warn">tracked, not confirmed</span>':'<span class="pill bad">not in library</span>'}
+          ${!m.known?`<br><button class="lk" onclick="addDoc(${JSON.stringify(m.name).replace(/"/g,"&quot;")});toast('Added to Document Library')">add to library</button>`:""}</td>
+        <td><small>${esc(m.ctx||"")}</small></td></tr>`).join("")}
+    </tbody></table></div>`:""}
+
+    ${p.budget.length?`<h3 style="margin-top:18px">Budget rules to check</h3>
+      ${p.budget.map(b=>`<div class="rowbox"><strong>${esc(b.name)}</strong>${b.lines.map(l=>`<div><small>${esc(l)}</small></div>`).join("")}</div>`).join("")}`:""}
+
+    ${p.scoring.length?`<h3 style="margin-top:18px">Scoring criteria</h3>
+      <div class="tw"><table><thead><tr><th>Criterion</th><th class="r">Points</th></tr></thead><tbody>
+      ${p.scoring.map(s=>`<tr><td>${esc(s.crit)}</td><td class="r"><strong>${s.pts}</strong></td></tr>`).join("")}
+      <tr><td><strong>Total detected</strong></td><td class="r"><strong>${p.scoring.reduce((a,b)=>a+b.pts,0)}</strong></td></tr>
+      </tbody></table></div>
+      <small>Weight your narrative toward the highest-scoring sections.</small>`:""}
+
+    ${p.eligibility.length?`<h3 style="margin-top:18px">Eligibility language</h3>
+      ${p.eligibility.map(e=>`<div class="note"><small>${esc(e)}</small></div>`).join("")}`:""}
+  </div>`;
+}
+function fuzzyDoc(a,b){
+  const n=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  const A=n(a),B=n(b); if(A===B) return true;
+  if(A.includes(B)||B.includes(A)) return true;
+  const stem=w=>w.replace(/(?:ing|ed|es|s)$/,"");
+  const ta=new Set(A.split(" ").filter(w=>w.length>3).map(stem));
+  const tb=B.split(" ").filter(w=>w.length>3).map(stem);
+  if(!tb.length) return false;
+  const hits=tb.filter(w=>ta.has(w)).length;
+  return hits/tb.length >= 0.6;
+}
+function newApp(f){
+  return Object.assign({ id:uid(), title:"New application", funder:"", amount:"", deadline:"", status:"Prospect",
+    portal:"", notes:"", reportingDue:"", submitted:"", created:today(),
+    parsed:{questions:[],attachments:[],budget:[],scoring:[],eligibility:[],raw:""}, drafts:{}, attachOK:{}, draftMeta:{}, versions:{}, budgetAck:{} }, f||{});
+}
+function createAppFromParse(){
+  if(!lastParse) return;
+  const o=org();
+  const a={ id:uid(), title: lastParse.funder? lastParse.funder.slice(0,70) : "New application",
+    funder: lastParse.funder||"", amount: lastParse.amountMax||"", deadline: lastParse.deadline||"",
+    status:"Drafting", portal:"", notes:"", reportingDue:"", submitted:"",
+    parsed:lastParse, drafts:{}, attachOK:{}, draftMeta:{}, versions:{}, budgetAck:{}, created:today() };
+  if(lastParse.title) a.title=lastParse.title.slice(0,90);
+  o.apps.unshift(a); save(); curApp=a.id; cur="drafts"; render();
+  toast("Application created — generate drafts next");
+}
+function manualApp(){
+  const o=org();
+  const a=newApp({status:"Prospect"});
+  o.apps.unshift(a); save(); curApp=a.id; cur="drafts"; render();
+}
+
+/* ============================================================
+   VIEW: DRAFTS
+   ============================================================ */
+let curApp=null;
+function openApp(id){ curApp=id; cur="drafts"; render(); window.scrollTo(0,0); }
+function delApp(id){ if(!confirm("Delete this application and its drafts?"))return; const o=org(); o.apps=o.apps.filter(a=>a.id!==id); if(curApp===id)curApp=null; save(); render(); }
+function setApp(id,k,v){ const a=org().apps.find(x=>x.id===id); if(a){ a[k]=v; save(); } }
+
+function viewDrafts(el){
+  const o=org();
+  if(!o.apps.length){ el.innerHTML=`<div class="card"><div class="empty"><div class="ic">▱</div>
+    No applications yet.<br><button class="lk" onclick="App.go('rfp')">Read an RFP to create one</button></div></div>`; return; }
+  if(!curApp || !o.apps.some(a=>a.id===curApp)) curApp=o.apps[0].id;
+  const a=o.apps.find(x=>x.id===curApp);
+  const qs=(a.parsed&&a.parsed.questions)||[];
+  const pr=appProgress(a); const done=pr.complete;
+  const dt=daysTo(a.deadline);
+
+  el.innerHTML=`
+  <div class="ch"><div><h1>Drafts</h1><small>Pulled from your vault and answer library. Anything unsupported is flagged, never invented.</small></div>
+    <div class="hspace"></div>
+    <div class="f" style="margin:0;min-width:240px"><label>Application</label>
+      <select onchange="curApp=this.value;render()">${o.apps.map(x=>`<option value="${x.id}" ${x.id===curApp?"selected":""}>${esc(x.title||x.funder||"Untitled")}</option>`).join("")}</select></div>
+  </div>
+
+  <div class="card">
+    <div class="grid g4">
+      <div class="f"><label>Title</label><input value="${esc(nn(a.title))}" onchange="setApp('${a.id}','title',this.value);render()"></div>
+      <div class="f"><label>Funder</label><input value="${esc(nn(a.funder))}" onchange="setApp('${a.id}','funder',this.value)"></div>
+      <div class="f"><label>Amount requested</label><input type="number" value="${esc(nn(a.amount))}" onchange="setApp('${a.id}','amount',this.value)"></div>
+      <div class="f"><label>Deadline</label><input type="date" value="${esc(nn(a.deadline))}" onchange="setApp('${a.id}','deadline',this.value);render()"></div>
+    </div>
+    <div class="grid g3">
+      <div class="f"><label>Status</label><select onchange="moveStage('${a.id}',this.value)">
+        ${STAGES.map(s=>`<option ${s===a.status?"selected":""}>${s}</option>`).join("")}</select></div>
+      <div class="f"><label>Portal / submission URL</label><input value="${esc(nn(a.portal))}" onchange="setApp('${a.id}','portal',this.value)" placeholder="https://"></div>
+      <div class="f"><label>Progress</label>
+        <div class="meter" style="margin-top:9px"><i class="${!qs.length?"lo":done===qs.length?"":done?"mid":"lo"}" style="width:${qs.length?Math.round(done/qs.length*100):0}%"></i></div>
+        <small>${done} of ${qs.length} clear of gaps${pr.gaps?` · <strong style="color:var(--red)">${pr.gaps} gap${pr.gaps===1?"":"s"} to fill</strong>`:""}${dt!=null?" · "+(dt<0?"deadline past":dt+" days to deadline"):""}</small></div>
+    </div>
+  </div>
+
+  ${qs.length?`
+  <div class="card">
+    <div class="ch"><h3>Questions</h3><div class="hspace"></div>
+      <div class="btnrow">
+        <button class="b n" onclick="genAll('${a.id}')">${AI.ready()?'<span class="ai-badge">AI</span> Draft all missing':'Generate all missing'}</button>
+        <button class="b g" onclick="exportMenu('${a.id}')">Export ▾</button>
+        <button class="b g sm" onclick="addQ('${a.id}')">+ Add question</button>
+      </div></div>
+    ${AI.ready()?"":`<div class="note w"><strong>AI drafting is off.</strong> Drafts come from the offline vault engine. <button class="lk" onclick="App.go('settings')">Turn on AI in Settings</button></div>`}
+    <div class="note">Every ${GAP_A}NEEDS: …${GAP_B} marker is a fact the vault could not supply. Fill it in the vault, or write it here. Nothing is guessed — made-up numbers in a grant application are a liability you sign for.</div>
+  </div>
+
+  ${qs.map((q,i)=>{
+    const d=(a.drafts||{})[q.id]||"";
+    const w=words(d); const over = q.limit&&q.limitType==="words"&&w>q.limit;
+    const chars=d.length; const overC = q.limit&&q.limitType==="chars"&&chars>q.limit;
+    const gapN=(d.match(new RegExp(GAP_A,"g"))||[]).length;
+    const meta=(a.draftMeta||{})[q.id]||null;
+    return `<div class="card">
+      <div class="ch">
+        <div style="flex:1;min-width:240px">
+          <h4>Question ${i+1}${q.limit?` · <small>${q.limit} ${q.limitType} max</small>`:""}</h4>
+          <textarea rows="2" onchange="setQ('${a.id}','${q.id}','text',this.value);render()" style="font-size:.9rem">${esc(q.text)}</textarea>
+          <div style="margin-top:5px">${q.topicLabel?`<span class="tag">vault: ${esc(q.topicLabel)}</span>${q.conf==="low"?`<span class="pill warn">weak match — check this one</span>`:""}`:`<span class="pill bad">no vault match</span>`}
+            ${gapN?`<span class="pill bad">${gapN} gap${gapN===1?"":"s"}</span>`:d?`<span class="pill ok">complete</span>`:""}</div>
+        </div>
+      </div>
+      <div class="f"><label>Draft</label>
+        <textarea rows="${d?9:4}" onchange="setDraft('${a.id}','${q.id}',this.value);render()" placeholder="Click Generate to build this from your vault.">${esc(d)}</textarea>
+        <div class="wc ${over||overC?"over":""}">${w} words${q.limit?(q.limitType==="words"?` / ${q.limit} max`:` · ${chars} / ${q.limit} characters`):""}${over?" — over the limit":""}${overC?" — over the limit":""}</div>
+      </div>
+      ${d&&gapN?`<div class="draftbox" style="background:#fbfcfe"><small style="color:var(--mut);display:block;margin-bottom:6px">Gaps highlighted:</small>${renderDraftText(d)}</div>`:""}
+      ${meta?`<div class="src" style="margin-top:7px">${meta.ai?'<span class="ai-badge">AI</span> ':""}Source: ${esc(meta.source)}${meta.sources&&meta.sources.length?` — used: ${esc(meta.sources.join("; "))}`:""}${meta.gaps&&meta.gaps.length?` · Missing: ${esc(meta.gaps.join(", "))}`:""}${meta.note?`<br>Note: ${esc(meta.note)}`:""}</div>`:""}
+      <div class="btnrow" style="margin-top:10px">
+        <button class="b sm ${AI.ready()?"n":""}" id="gen_${q.id}" onclick="gen('${a.id}','${q.id}')">${AI.ready()?'<span class="ai-badge">AI</span> ':""}${d?"Regenerate":"Generate draft"}</button>
+        ${d&&AI.ready()?`<button class="b g sm" onclick="reviseDraft('${a.id}','${q.id}')">Revise…</button>`:""}
+        ${((a.versions||{})[q.id]||[]).length?`<button class="b g sm" onclick="showVersions('${a.id}','${q.id}')">History (${a.versions[q.id].length})</button>`:""}
+        ${d?`<button class="b g sm" onclick="navigator.clipboard.writeText(${JSON.stringify(d).replace(/"/g,"&quot;")}).then(()=>toast('Copied'))">Copy</button>
+        <button class="b o sm" onclick="saveToLib('${a.id}','${q.id}')">Save to Answer Library</button>`:""}
+        <div class="hspace" style="flex:1"></div>
+        <button class="lk dz" onclick="delQ('${a.id}','${q.id}')">remove question</button>
+      </div>
+    </div>`;}).join("")}
+  `:`<div class="card"><div class="empty"><div class="ic">?</div>No questions on this application.<br>
+      <button class="lk" onclick="addQ('${a.id}')">Add one by hand</button> or <button class="lk" onclick="App.go('rfp')">read an RFP</button></div></div>`}
+
+  ${window.compliancePanel?compliancePanel(a,o):""}
+
+  ${(a.parsed&&a.parsed.attachments&&a.parsed.attachments.length)?`
+  <div class="card"><h3>Attachment checklist</h3>
+    ${a.parsed.attachments.map((m,i)=>{
+      const hit=o.docs.find(d=>fuzzyDoc(d.name,m.name));
+      const ck=(a.attachOK||{})[m.name];
+      return `<div class="inline" style="padding:6px 0;border-bottom:1px solid var(--line)">
+        <label class="chk" style="flex:1"><input type="checkbox" ${ck?"checked":""} onchange="setAttach('${a.id}',${JSON.stringify(m.name).replace(/"/g,"&quot;")},this.checked);render()">
+          ${esc(m.name)}</label>
+        ${hit?`<span class="pill ${hit.status==="have"?"ok":"warn"}">${hit.status==="have"?"on hand":"not confirmed"}</span>`:`<span class="pill bad">not in library</span>`}
+      </div>`;}).join("")}
+  </div>`:""}
+
+  <div class="card"><div class="f"><label>Notes for this application</label>
+    <textarea rows="3" onchange="setApp('${a.id}','notes',this.value)">${esc(nn(a.notes))}</textarea></div>
+    <div class="grid g2">
+      <div class="f"><label>Date submitted</label><input type="date" value="${esc(nn(a.submitted))}" onchange="setApp('${a.id}','submitted',this.value)"></div>
+      <div class="f"><label>First report due (if awarded)</label><input type="date" value="${esc(nn(a.reportingDue))}" onchange="setApp('${a.id}','reportingDue',this.value);render()"></div>
+    </div>
+  </div>`;
+}
+/* A draft that is nothing but gap markers is not an answer. */
+function appProgress(a){
+  const qs=(a&&a.parsed&&a.parsed.questions)||[];
+  const rx=new RegExp(GAP_A,"g");
+  let drafted=0, complete=0, gaps=0;
+  qs.forEach(q=>{ const d=String((a.drafts||{})[q.id]||"");
+    if(!d.trim()) return; drafted++;
+    const g=(d.match(rx)||[]).length; gaps+=g; if(!g) complete++; });
+  return {total:qs.length, drafted, complete, gaps};
+}
+function pushVersion(a,qid,src){
+  const prev=String((a.drafts||{})[qid]||""); if(!prev.trim()) return;
+  a.versions=a.versions||{}; const L=a.versions[qid]=a.versions[qid]||[];
+  if(L.length && L[0].text===prev) return;
+  L.unshift({t:new Date().toISOString(), text:prev, src:src||((a.draftMeta||{})[qid]||{}).source||"edit", by:(window.Cloud&&Cloud.email())||""});
+  if(L.length>20) L.length=20;
+}
+function setDraft(aid,qid,v){ const a=org().apps.find(x=>x.id===aid); if(!a)return; a.drafts=a.drafts||{};
+  if(v!==a.drafts[qid]) pushVersion(a,qid,"before manual edit"); a.drafts[qid]=v; save(); }
+function setQ(aid,qid,k,v){ const a=org().apps.find(x=>x.id===aid); const q=a&&a.parsed.questions.find(x=>x.id===qid);
+  if(q){ q[k]=v; if(k==="text"){ const c=classify(v); q.topicId=c.topic?c.topic.id:""; q.topicLabel=c.topic?c.topic.label:""; q.conf=c.conf; } save(); } }
+function addQ(aid){ const a=org().apps.find(x=>x.id===aid); if(!a)return;
+  a.parsed=a.parsed||{questions:[]}; a.parsed.questions=a.parsed.questions||[];
+  a.parsed.questions.push({id:uid(),text:"New question",limit:"",limitType:"",topicId:"",topicLabel:""}); save(); render(); }
+function delQ(aid,qid){ const a=org().apps.find(x=>x.id===aid); if(!a)return;
+  a.parsed.questions=a.parsed.questions.filter(q=>q.id!==qid); if(a.drafts) delete a.drafts[qid]; save(); render(); }
+function setAttach(aid,name,v){ const a=org().apps.find(x=>x.id===aid); if(!a)return; a.attachOK=a.attachOK||{}; a.attachOK[name]=v; save(); }
+
+function saveToLib(aid,qid){
+  const o=org(), a=o.apps.find(x=>x.id===aid); const q=a.parsed.questions.find(x=>x.id===qid);
+  const t=(a.drafts||{})[qid]||"";
+  if(new RegExp(GAP_A).test(t) && !confirm("This draft still has unfilled gap markers. Save it to the library anyway?")) return;
+  addAnswer({title:(q.topicLabel||q.text.slice(0,50)), question:q.text, text:t, funder:a.funder||"", tags:q.topicId||""});
+  cur="answers"; render(); toast("Saved to Answer Library");
+}
+function dl(name,text,mime){
+  const b=new Blob([text],{type:mime||"text/plain"}); const u=URL.createObjectURL(b);
+  const a=document.createElement("a"); a.href=u; a.download=name; document.body.appendChild(a); a.click();
+  a.remove(); setTimeout(()=>URL.revokeObjectURL(u),3000);
+}
+
+/* ============================================================
+   VIEW: BACKUP / DATA
+   ============================================================ */
+function viewData(el){
+  const o=org();
+  const size=(()=>{ try{ return (localStorage.getItem(KEY)||"").length; }catch(e){ return 0; } })();
+  el.innerHTML=`
+  <div class="ch"><div><h1>Backup & Data</h1><small>${window.Cloud&&Cloud.signedIn()?"Synced to your cloud account. Downloads are still a good extra copy.":"Stored in this browser. Turn on cloud sync in Settings, or export regularly."}</small></div></div>
+
+  ${window.Cloud&&Cloud.signedIn()?`<div class="note g"><strong>Cloud sync is on</strong> as ${esc(Cloud.email())}. Every change is saved to your account and restorable from snapshots in Settings.</div>`:`<div class="note w"><strong>This data lives in one browser on one computer.</strong> Clearing site data, switching browsers, or using a different machine means it is not there. <button class="lk" onclick="App.go('settings')">Turn on cloud sync</button> or export a backup after any significant work.</div>`}
+
+  <div class="card"><h3>Export</h3>
+    <div class="btnrow">
+      <button class="b" onclick="exportAll()">Download full backup (JSON)</button>
+      <button class="b g" onclick="exportVaultMD()">Export vault as Markdown</button>
+      <button class="b g" onclick="exportAnswersMD()">Export answer library</button>
+    </div>
+    <p style="margin-top:10px"><small>Current store: ${(size/1024).toFixed(1)} KB · ${S.orgs.length} organization${S.orgs.length===1?"":"s"} · ${o.apps.length} applications · ${o.answers.length} answers · ${o.docs.length} documents</small></p>
+  </div>
+
+  <div class="card"><h3>Import</h3>
+    <div class="f"><label>Restore from a backup file</label><input type="file" accept=".json,application/json" onchange="importAll(this)"></div>
+    <div class="hint">This replaces everything currently stored. Export first if you are unsure.</div>
+  </div>
+
+  <div class="card"><h3>Organizations</h3>
+    ${S.orgs.map(x=>`<div class="inline" style="padding:7px 0;border-bottom:1px solid var(--line)">
+      <div style="flex:1">${esc(x.name)} ${x.id===S.activeId?'<span class="pill ok">active</span>':""}
+        <br><small>${x.apps.length} applications · ${x.answers.length} answers · ${vaultStats(x).pct}% vault</small></div>
+      ${S.orgs.length>1?`<button class="lk dz" onclick="delOrg('${x.id}')">delete</button>`:""}
+    </div>`).join("")}
+    <div class="btnrow" style="margin-top:12px"><button class="b g sm" onclick="App.newOrg()">+ Add organization</button>
+      <button class="b g sm" onclick="cloneOrg()">Duplicate active organization</button></div>
+  </div>
+
+  <div class="card"><h3>Reset</h3>
+    <div class="btnrow"><button class="b dz" onclick="wipe()">Erase all data in this browser</button></div>
+  </div>
+
+  <div class="card"><h3>How the draft engine decides</h3>
+    <div class="note"><strong>With AI on</strong>, Claude reads the question, the RFP's scoring criteria, your vault, and your closest Answer Library matches, then writes a tailored answer within the limit and lists the sources it used. It is told to mark missing facts as gaps rather than invent them. <strong>With AI off or unavailable</strong>, the offline engine below runs instead.</div>
+    <ol style="font-size:.9rem;line-height:1.7;padding-left:20px;margin:0">
+      <li>It reads the funder's question and looks for a strong match in your <strong>Answer Library</strong>. Funded answers win ties.</li>
+      <li>If no saved answer matches, it classifies the question against ${TOPICS.length} vault topics (mission, need, capacity, budget, and so on).</li>
+      <li>It assembles the draft from the vault fields that topic uses, in order.</li>
+      <li>Any field that is empty becomes a <span class="gap">NEEDS: …</span> marker. It does not estimate, round, or infer a number you have not entered.</li>
+      <li>If the question has a word limit and the draft runs long, it trims at a sentence boundary and tells you it did.</li>
+    </ol>
+    <div class="note d" style="margin-top:12px"><strong>You are the submitter.</strong> This tool drafts and assembles; it does not submit. Grant applications carry certifications you sign personally — read every answer, verify every number against your own records, and resolve every gap marker before you file.</div>
+  </div>`;
+}
+function exportAll(){ dl("grant-copilot-backup-"+today()+".json", JSON.stringify(S,null,2), "application/json"); toast("Backup downloaded"); }
+function importAll(inp){
+  const f=inp.files&&inp.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{ try{
+      const d=JSON.parse(r.result);
+      if(!d||!Array.isArray(d.orgs)||!d.orgs.length) throw new Error("not a Grant Copilot backup");
+      if(!confirm("Replace all current data with this backup?")) return;
+      S=d; S.orgs.forEach(normalizeOrg); normalizeState(); if(!S.orgs.some(o=>o.id===S.activeId)) S.activeId=S.orgs[0].id;
+      save(); cur="dash"; render(); toast("Backup restored");
+    }catch(e){ toast("Could not read that file: "+e.message,"err"); } };
+  r.readAsText(f); inp.value="";
+}
+function exportVaultMD(){
+  const o=org(), L=["# "+(o.profile.legalName||o.name)+" — Grant Data Vault","","_Exported "+fmtD(today())+"_",""];
+  VAULT_SECTIONS.forEach(s=>{
+    L.push("## "+s.t,"");
+    s.f.forEach(k=>{ const v=nn(o.profile[k]).trim(); L.push("**"+(FIELD_LABEL[k]||k)+":** "+(v||"_(not filled)_")); L.push(""); });
+  });
+  if(o.board.length){ L.push("## Board of Directors",""); o.board.forEach(b=>L.push("- "+b.name+(b.role?", "+b.role:"")+(b.affil?" — "+b.affil:""))); L.push(""); }
+  if(o.staff.length){ L.push("## Key staff",""); o.staff.forEach(s=>L.push("- **"+s.name+"**"+(s.title?", "+s.title:"")+(s.cred?" ("+s.cred+")":"")+(s.bio?" — "+s.bio:""))); L.push(""); }
+  if(o.programs.length){ L.push("## Programs",""); o.programs.forEach(p=>L.push("- **"+p.name+"**"+(p.ages?" ("+p.ages+")":"")+(p.desc?" — "+p.desc:""))); L.push(""); }
+  if(o.awards.length){ L.push("## Grant history",""); o.awards.forEach(a=>L.push("- "+(a.funder||"—")+" — "+money(a.amount)+(a.year?" ("+a.year+")":"")+(a.purpose?" — "+a.purpose:""))); L.push(""); }
+  if(o.docs.length){ L.push("## Document library",""); o.docs.forEach(d=>L.push("- "+d.name+" — "+d.status+(d.expires?", expires "+fmtD(d.expires):"")+(d.loc?", at "+d.loc:""))); }
+  dl("grant-vault-"+today()+".md", L.join("\n"), "text/markdown"); toast("Vault exported");
+}
+function exportAnswersMD(){
+  const o=org(); if(!o.answers.length){ toast("No saved answers yet","err"); return; }
+  const L=["# Answer Library — "+(o.profile.legalName||o.name),""];
+  o.answers.forEach(a=>{ L.push("## "+(a.title||"Untitled")+(a.won?" (funded)":""),"");
+    if(a.question) L.push("**Question:** "+a.question,"");
+    L.push(a.text||"","", "_"+words(a.text)+" words"+(a.funder?" · "+a.funder:"")+(a.year?" · "+a.year:"")+"_","","---",""); });
+  dl("answer-library-"+today()+".md", L.join("\n"), "text/markdown"); toast("Answer library exported");
+}
+function delOrg(id){
+  if(S.orgs.length<2) return;
+  const o=S.orgs.find(x=>x.id===id);
+  if(!confirm("Delete "+(o?o.name:"this organization")+" and everything in it? This cannot be undone.")) return;
+  S.orgs=S.orgs.filter(x=>x.id!==id); if(S.activeId===id) S.activeId=S.orgs[0].id; save(); render(); toast("Organization deleted");
+}
+function cloneOrg(){
+  const o=org(), c=JSON.parse(JSON.stringify(o));
+  c.id=uid(); c.name=o.name+" (copy)";
+  ["board","staff","programs","awards","docs","answers","apps"].forEach(k=>c[k].forEach(r=>r.id=uid()));
+  S.orgs.push(c); S.activeId=c.id; save(); render(); toast("Duplicated");
+}
+function wipe(){
+  if(!confirm("Erase every organization, vault, document, answer, and application stored in this browser?")) return;
+  if(!confirm("Last check — this cannot be undone. Have you exported a backup?")) return;
+  localStorage.removeItem(KEY); S=null; load(); cur="dash"; render(); toast("All data erased");
+}
+
+</script>
+<script src="js/ai.js"></script>
+<script src="js/export.js"></script>
+<script src="js/pipeline.js"></script>
+<script src="js/search.js"></script>
+<script src="js/cloud.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/boot.js"></script>
+</body>
+</html>
